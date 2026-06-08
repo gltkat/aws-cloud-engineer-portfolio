@@ -28,6 +28,14 @@ Terraformによる2AZ構成
 
 <img width="501" height="289" alt="image" src="https://github.com/user-attachments/assets/f88f87b8-fba2-4615-9439-9ddc5d123fb1" />
 
+学んだこと
 
+EndpointによるAWSサービス接続
+
+
+NAT Gatewayとの違い
+
+
+Private DNSの重要性
 
 作成中
