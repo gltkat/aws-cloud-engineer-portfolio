@@ -30,6 +30,26 @@ TerraformによるAWS 2AZ Web環境構築
 
 ![Architecture](images/architecture.png)
 
+## 構成概要
+
+```text
+Internet
+    │
+    ▼
+ALB
+    │
+    ▼
+Auto Scaling Group
+    │
+    ▼
+EC2 (Private)
+
+    ├─ SSM Endpoint
+    └─ S3 Gateway Endpoint
+
+NAT Gateway
+```
+
 ## 構築内容
 
 - VPC
