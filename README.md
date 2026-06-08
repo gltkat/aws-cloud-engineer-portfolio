@@ -26,6 +26,10 @@ TerraformとCloudFormationを利用してAWS環境の構築・検証を行った
 
 TerraformによるAWS 2AZ Web環境構築
 
+## 構成図
+
+![Architecture](images/architecture.png)
+
 ## 構築内容
 
 - VPC
