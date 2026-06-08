@@ -4,6 +4,11 @@
 
 TerraformとCloudFormationを利用してAWS環境の構築・検証を行った成果物をまとめています。
 
+##保有資格
+
+- CCNA
+- AWS Solutions Architect Associate
+
 ## Skills
 
 - AWS
