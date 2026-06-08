@@ -20,33 +20,34 @@ TerraformとCloudFormationを利用してAWS環境の構築・検証を行った
 - SSM Endpoint
 - S3 Gateway Endpoint
 
-## Projects
+# Project 01
 
-### 概要
-
-Terraformによる2AZ構成での動作検証
-
-<img width="501" height="289" alt="image" src="https://github.com/user-attachments/assets/f88f87b8-fba2-4615-9439-9ddc5d123fb1" />
-
-## 学んだこと
-
-EndpointによるAWSサービス接続
-
-
-NAT Gatewayとの違い
-
-
-Private DNSの重要性
-
-### Project 01
+## 概要
 
 TerraformによるAWS 2AZ Web環境構築
 
-<img width="427" height="650" alt="image" src="https://github.com/user-attachments/assets/9f7525fc-901e-43c9-bc32-ec9ec0c9a87b" />
+## 構築内容
 
+- VPC
+- Public Subnet
+- Private Subnet
+- ALB
+- Auto Scaling Group
+- NAT Gateway
+- SSM Endpoint
+- S3 Gateway Endpoint
 
+## 検証内容
 
+- NATあり構成
+- NATなし構成
+- SSM接続確認
+- S3接続確認
+- ALB負荷分散確認
+- ASG自動復旧確認
 
+## 学んだこと
 
-
-
+- EndpointによるAWSサービス接続
+- NAT Gatewayとの違い
+- Private DNSの重要性
