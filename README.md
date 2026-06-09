@@ -61,11 +61,9 @@ NAT Gateway
 VPC 10.0.0.0/16
 
 Public-A
-  ALB
   NAT
 
 Public-C
-  ALB
   NAT
 
 Private-A
