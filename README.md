@@ -39,14 +39,10 @@ Internet
 ALB
     │
     ▼
-Auto Scaling Group
-    │
-    ▼
-EC2 (Private)
+EC2 × 2 (ASG)
 
     ├─ SSM Endpoint
     └─ S3 Gateway Endpoint
-
 NAT Gateway
 ```
 
