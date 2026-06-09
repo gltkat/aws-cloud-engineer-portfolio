@@ -148,16 +148,24 @@ S3への通信が制御されることを理解した。
 ## 構成概要
 
 ```text
-Internet
-    │
-    ▼
-ALB
-    │
-    ▼
-EC2 × 2 (ASG)
+VPC 10.0.0.0/16
 
-    ├─ SSM Endpoint
-    └─ S3 Gateway Endpoint
+Public-A
+  ALB
+  NAT
+
+Public-C
+  ALB
+  NAT
+
+Private-A
+  EC2
+
+Private-C
+  EC2
+
+SSM Endpoint
+S3 Endpoint
 ```
 
 ### 以下作成中エリア
