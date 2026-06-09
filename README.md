@@ -20,7 +20,7 @@ TerraformとCloudFormationを利用してAWS環境の構築・検証を行った
 - SSM Endpoint
 - S3 Gateway Endpoint
 
-# Project 01
+# Project
 
 ## 概要
 
@@ -47,6 +47,8 @@ EC2 × 2 (ASG)
 NAT Gateway
 ```
 
+# Project 01
+
 ## 構築内容
 
 - VPC
@@ -57,6 +59,29 @@ NAT Gateway
 - NAT Gateway
 - SSM Endpoint
 - S3 Gateway Endpoint
+
+##  詳細構成図
+
+---
+VPC 10.0.0.0/16
+
+Public-A
+  ALB
+  NAT
+
+Public-C
+  ALB
+  NAT
+
+Private-A
+  EC2
+
+Private-C
+  EC2
+
+SSM Endpoint
+S3 Endpoint
+---
 
 ## 検証内容
 
