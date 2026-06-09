@@ -62,7 +62,7 @@ NAT Gateway
 
 ##  詳細構成図
 
----
+```text
 VPC 10.0.0.0/16
 
 Public-A
@@ -81,7 +81,7 @@ Private-C
 
 SSM Endpoint
 S3 Endpoint
----
+```
 
 ## 検証内容
 
