@@ -53,7 +53,6 @@ NAT Gateway
 - Public Subnet
 - Private Subnet
 - NAT Gateway
-- SSM Endpoint
 - S3 Gateway Endpoint
 
 ##  詳細構成図
@@ -77,6 +76,16 @@ Private-C
 
 S3 Endpoint
 ```
+## 検証目的
+
+プライベートサブネット上のEC2が
+NAT Gatewayを利用した場合と
+利用しない場合で通信経路が
+どのように変化するか確認した。
+
+またS3 Gateway Endpointにより
+インターネット接続なしで
+S3へアクセス可能であることを確認した。
 
 ## 検証内容
 
@@ -101,10 +110,23 @@ EC2
 ```
 
 ## 学んだこと
-NAT Gatewayによりプライベート上のインスタンスからインターネットへの接続が可能
-NAT Gatewayの削除やルートテーブルからNAT Gatewayへのルートを削除するとインターネットとの接続が止まることの確認
-S3 Endpointを設けるとインターネットに繋がらなくてもS3への接続が可能となること
 
+- NAT Gatewayはプライベートサブネットから
+  インターネットへのアウトバウンド通信を実現する
+
+- NAT Gatewayを削除すると
+  EC2から外部インターネットへの通信が停止する
+
+- S3 Gateway Endpointを利用することで
+  NAT Gatewayが存在しなくても
+  S3へアクセスできる
+
+- AWSサービスごとに適切なEndpointを利用することで
+  NAT Gatewayの利用コストを削減できる
+  
+  ※コストを削減できるのは通信料金のみでAPIの利用料金は別途必要
+
+  
 
 ### 以下作成中エリア
 
