@@ -74,6 +74,8 @@ Private-C
 
 S3 Endpoint
 ```
+<img width="717" height="427" alt="image" src="https://github.com/user-attachments/assets/3e3eb2e7-14e5-4067-8cdd-f279a4e17389" />
+
 ## 検証目的
 
 プライベートサブネット上のEC2が
@@ -106,6 +108,7 @@ EC2
  ↓
 ○ S3 Endpoint
 ```
+<img width="657" height="423" alt="image" src="https://github.com/user-attachments/assets/9694c1ea-449c-4d9a-8f60-39e8afb205b5" />
 
 ## 学んだこと
 
@@ -146,6 +149,8 @@ S3への通信が制御されることを理解した。
 # Project 02
 
 ## 詳細構成図
+
+### SSM Endpointを追加した構成
 
 ```text
 VPC 10.0.0.0/16
