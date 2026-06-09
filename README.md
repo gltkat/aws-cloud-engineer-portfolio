@@ -151,11 +151,9 @@ S3への通信が制御されることを理解した。
 VPC 10.0.0.0/16
 
 Public-A
-  ALB
   NAT
 
 Public-C
-  ALB
   NAT
 
 Private-A
