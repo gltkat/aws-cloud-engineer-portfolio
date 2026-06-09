@@ -121,21 +121,46 @@ EC2
   NAT Gatewayが存在しなくても
   S3へアクセスできる
 
-- AWSサービスごとに適切なEndpointを利用することで
-  NAT Gatewayの利用コストを削減できる
-  
-  ※コストを削減できるのは通信料金のみでAPIの利用料金は別途必要
+- S3 Gateway Endpointを利用することで
+  S3向け通信をNAT Gateway経由にしなくて済む
+
+- NAT Gatewayのデータ処理料金を削減できる
+
+- S3利用料金自体は別途発生する
 
 ## つまずきポイント
 
-NATゲートウェイはAWSの仕様としてSGは不要だった
+### NAT GatewayにSecurity Groupは設定できない
 
-NATゲートウェイへの通信はルートテーブルで管理される（S3ゲートウェイも宛先をIPで管理しないためルートテーブルで宛先を設定）
+当初はEC2と同様にSecurity Groupを設定するものと考えていた。
 
+しかしNAT GatewayはSecurity Groupを持たず、
+通信制御はルートテーブルによって行われることを確認した。
 
+### S3 Gateway Endpointの通信制御
 
+当初はSecurity Groupによる制御を想定していた。
 
-  
+しかしGateway EndpointはSecurity Groupを持たず、
+ルートテーブルへ自動追加される経路によって
+S3への通信が制御されることを理解した。
+
+# Project 02
+
+## 構成概要
+
+```text
+Internet
+    │
+    ▼
+ALB
+    │
+    ▼
+EC2 × 2 (ASG)
+
+    ├─ SSM Endpoint
+    └─ S3 Gateway Endpoint
+```
 
 ### 以下作成中エリア
 
