@@ -43,6 +43,7 @@ EC2 × 2 (ASG)
 
     ├─ SSM Endpoint
     └─ S3 Gateway Endpoint
+
 NAT Gateway
 ```
 
