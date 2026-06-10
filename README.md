@@ -129,18 +129,23 @@ EC2
 
 ### NAT GatewayにSecurity Groupは設定できない
 
-当初はEC2と同様にSecurity Groupを設定するものと考えていた。
+実装当初EC2と同様にSecurity Groupを設定しようとしてしまっていた（座学での知識が使えていなかった）。
 
 しかしNAT GatewayはSecurity Groupを持たず、
 通信制御はルートテーブルによって行われることを確認した。
 
+当初はNAT Gatewayの削除をブラウザ上のUIで気軽に行ってしまったりもしたが
+stateファイルとの差異が時に深刻な状況を招くことを後々の作業での躓きく点になってしまっていた。
+現在ではリソースそのものや記載部分をコメントアウトするなどした後にTerraform上からapplyすることを心掛けるようになった。
+一度くずれたstateファイルの修正にはバックアップファイルの使用やreplaseコマンドなどの利用も有効であることを学んだ。
+
 ### S3 Gateway Endpointの通信制御
 
-当初はSecurity Groupによる制御を想定していた。
+当初は座学で得た知識を活かせずにSecurity Groupによる制御を行おうとしていた。
 
 しかしGateway EndpointはSecurity Groupを持たず、
 ルートテーブルへ自動追加される経路によって
-S3への通信が制御されることを理解した。
+S3への通信が制御されることを改めて確認・理解できた。
 
 # Project 02
 
