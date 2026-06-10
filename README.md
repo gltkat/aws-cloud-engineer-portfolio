@@ -71,6 +71,7 @@ Private-C
 S3 Endpoint
 ```
 <img width="717" height="427" alt="image" src="https://github.com/user-attachments/assets/3e3eb2e7-14e5-4067-8cdd-f279a4e17389" />
+<img width="1458" height="771" alt="image" src="https://github.com/user-attachments/assets/586b1ff4-8bb7-4b3c-bf0e-c790568933f8" />
 
 ## 検証目的
 
@@ -136,7 +137,9 @@ EC2
 
 当初はNAT Gatewayの削除をブラウザ上のUIで気軽に行ってしまったりもしたが
 stateファイルとの差異が時に深刻な状況を招くことを後々の作業での躓きく点になってしまっていた。
+
 現在ではリソースそのものや記載部分をコメントアウトするなどした後にTerraform上からapplyすることを心掛けるようになった。
+
 Terraform stateとの不整合が発生した場合は、
 stateの修正やimportなどによる復旧が必要になることを学んだ。
 
@@ -147,6 +150,15 @@ stateの修正やimportなどによる復旧が必要になることを学んだ
 しかしGateway EndpointはSecurity Groupを持たず、
 ルートテーブルへ自動追加される経路によって
 S3への通信が制御されることを改めて確認・理解できた。
+
+### Terrafomにおけるresouceブロックとfor each構文の理解
+<img width="719" height="456" alt="image" src="https://github.com/user-attachments/assets/060de4b5-6ee9-4ab8-86c4-d5a976653620" />
+
+resourceブロック内に記述された複数の構築物はそれらすべてが１つのグループ（リソース）としてTerraformで管理される
+resource中にforeach構文で繰り返せば別グループのリソースとして構築される
+<img width="574" height="86" alt="image" src="https://github.com/user-attachments/assets/ae52ea85-6504-4a5b-ac8c-c3e5805f8e5b" />
+foreachを使わずリスト化しての表記だと1つのリソース内に2つのルートテーブルが含まれる
+
 
 # Project 02
 
@@ -172,6 +184,20 @@ Private-C
 SSM Endpoint
 S3 Endpoint
 ```
+## 検証目的
+
+SSM Endpointを使ったEC2へのログイン確認
+プライベートEC2から外部への通信が出来ないことをEC2のコンソール操作で確認する
+
+## 検証内容
+
+プライベート上のEC2インスタンスからインターネットへの接続
+
+
+
+
+
+
 
 ### 以下作成中エリア
 
