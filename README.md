@@ -111,7 +111,7 @@ EC2
 - NAT Gatewayはプライベートサブネットから
   インターネットへのアウトバウンド通信を実現する
 
-- NAT Gatewayを削除すると
+- NAT Gatewayの削除やルートテーブルからの除外により
   EC2から外部インターネットへの通信が停止する
 
 - S3 Gateway Endpointを利用することで
