@@ -41,7 +41,7 @@ EC2 × 2 (ASG)
 NAT Gateway
 ```
 
-# Project 01
+# Project 01 :TerraformによるAWS 2AZ高可用性環境構築
 
 ## 構築内容
 
@@ -151,12 +151,26 @@ stateの修正やimportなどによる復旧が必要になることを学んだ
 ルートテーブルへ自動追加される経路によって
 S3への通信が制御されることを改めて確認・理解できた。
 
-### Terrafomにおけるresouceブロックとfor each構文の理解
+### Terrafomにおけるresouceブロック
 <img width="814" height="510" alt="image" src="https://github.com/user-attachments/assets/085670f7-df8a-41ce-b5aa-4c9acd405d13" />
+Terraformでは1つのresourceブロックが
+1つの管理対象となる。
 
-resourceブロック内に記述された複数の構築物はそれらすべてが１つのグループ（リソース）としてTerraformで管理される
-resource中にforeach構文で繰り返せば別グループのリソースとして構築される
-foreachを使わずリスト化しての表記だと1つのリソース内に2つのルートテーブルが含まれる
+
+
+当初はresourceブロック内で複数SubnetやRouteTableを
+指定していたため、それぞれが個別リソースとして
+管理されるものと誤解していた。
+
+## Terraform実装メモ
+<img width="537" height="302" alt="image" src="https://github.com/user-attachments/assets/d282b085-0213-404a-a2e7-edcd1ef95a83" />
+
+for_eachを利用した場合は、
+同じ設定内容から複数の管理対象が作成される。
+
+- for_each利用時のリソース管理
+- subnet_idsによる複数Subnet指定
+- Terraform State管理
 
 
 # Project 02
