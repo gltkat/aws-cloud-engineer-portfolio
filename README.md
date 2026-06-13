@@ -153,10 +153,14 @@ S3への通信が制御されることを改めて確認・理解できた。
 
 ### Terrafomにおけるresouceブロック
 <img width="814" height="510" alt="image" src="https://github.com/user-attachments/assets/085670f7-df8a-41ce-b5aa-4c9acd405d13" />
-Terraformでは1つのresourceブロックが
-1つの管理対象となる。
 
+Terraformでは通常、
+1つのresourceブロックから
+1つの管理対象が作成される。
 
+ただしfor_eachを利用した場合は、
+1つのresourceブロックから
+複数の管理対象が作成される。
 
 当初はresourceブロック内で複数SubnetやRouteTableを
 指定していたため、それぞれが個別リソースとして
@@ -167,11 +171,6 @@ Terraformでは1つのresourceブロックが
 
 for_eachを利用した場合は、
 同じ設定内容から複数の管理対象が作成される。
-
-- for_each利用時のリソース管理
-- subnet_idsによる複数Subnet指定
-- Terraform State管理
-
 
 # Project 02
 
