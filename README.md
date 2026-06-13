@@ -41,7 +41,8 @@ EC2 × 2 (ASG)
 NAT Gateway
 ```
 
-# Project 01 :TerraformによるAWS 2AZ高可用性環境構築
+# Project 01
+## TerraformによるAWS 2AZ高可用性環境構築
 
 ## 構築内容
 
