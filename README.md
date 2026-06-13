@@ -136,7 +136,7 @@ EC2
 通信制御はルートテーブルによって行われることを確認した。
 
 当初はNAT Gatewayの削除をブラウザ上のUIで気軽に行ってしまったりもしたが
-stateファイルとの差異が時に深刻な状況を招くことを後々の作業での躓きく点になってしまっていた。
+stateファイルとの差異が深刻な状況を招いてしまい躓く点になっていた。
 
 現在ではリソースそのものや記載部分をコメントアウトするなどした後にTerraform上からapplyすることを心掛けるようになった。
 
@@ -152,11 +152,10 @@ stateの修正やimportなどによる復旧が必要になることを学んだ
 S3への通信が制御されることを改めて確認・理解できた。
 
 ### Terrafomにおけるresouceブロックとfor each構文の理解
-<img width="719" height="456" alt="image" src="https://github.com/user-attachments/assets/060de4b5-6ee9-4ab8-86c4-d5a976653620" />
+<img width="814" height="510" alt="image" src="https://github.com/user-attachments/assets/085670f7-df8a-41ce-b5aa-4c9acd405d13" />
 
 resourceブロック内に記述された複数の構築物はそれらすべてが１つのグループ（リソース）としてTerraformで管理される
 resource中にforeach構文で繰り返せば別グループのリソースとして構築される
-<img width="574" height="86" alt="image" src="https://github.com/user-attachments/assets/ae52ea85-6504-4a5b-ac8c-c3e5805f8e5b" />
 foreachを使わずリスト化しての表記だと1つのリソース内に2つのルートテーブルが含まれる
 
 
