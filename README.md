@@ -44,7 +44,7 @@ NAT Gateway
 # Project 01
 ## TerraformによるAWS 2AZ高可用性環境構築
 
-## 構築内容
+### 構築内容
 
 - VPC
 - Public Subnet
@@ -52,7 +52,7 @@ NAT Gateway
 - NAT Gateway
 - S3 Gateway Endpoint
 
-##  詳細構成図
+###  詳細構成図
 
 ```text
 VPC 10.0.0.0/16
@@ -74,7 +74,7 @@ S3 Endpoint
 <img width="717" height="427" alt="image" src="https://github.com/user-attachments/assets/3e3eb2e7-14e5-4067-8cdd-f279a4e17389" />
 <img width="1458" height="771" alt="image" src="https://github.com/user-attachments/assets/586b1ff4-8bb7-4b3c-bf0e-c790568933f8" />
 
-## 検証目的
+### 検証目的
 
 プライベートサブネット上のEC2が
 NAT Gatewayを利用した場合と
@@ -85,7 +85,7 @@ NAT Gatewayを利用した場合と
 インターネット接続なしで
 S3へアクセス可能であることを確認する。
 
-## 検証内容
+### 検証内容
 
 プライベート上のEC2インスタンスからインターネットへの接続
 
@@ -108,7 +108,7 @@ EC2
 ```
 <img width="657" height="423" alt="image" src="https://github.com/user-attachments/assets/9694c1ea-449c-4d9a-8f60-39e8afb205b5" />
 
-## 学んだこと
+### 学んだこと
 
 - NAT Gatewayはプライベートサブネットから
   インターネットへのアウトバウンド通信を実現する
@@ -127,9 +127,10 @@ EC2
 
 - S3利用料金自体は別途発生する
 
-## つまずきポイント
 
-### NAT GatewayにSecurity Groupは設定できない
+### つまずきポイント
+
+#### NAT GatewayにSecurity Groupは設定できない
 
 実装当初EC2と同様にSecurity Groupを設定しようとしてしまっていた（座学での知識が使えていなかった）。
 
@@ -144,7 +145,7 @@ stateファイルとの差異が深刻な状況を招いてしまい躓く点に
 Terraform stateとの不整合が発生した場合は、
 stateの修正やimportなどによる復旧が必要になることを学んだ。
 
-### S3 Gateway Endpointの通信制御
+#### S3 Gateway Endpointの通信制御
 
 当初は座学で得た知識を活かせずにSecurity Groupによる制御を行おうとしていた。
 
@@ -152,7 +153,7 @@ stateの修正やimportなどによる復旧が必要になることを学んだ
 ルートテーブルへ自動追加される経路によって
 S3への通信が制御されることを改めて確認・理解できた。
 
-### Terrafomにおけるresouceブロック
+#### Terrafomにおけるresouceブロック
 <img width="814" height="510" alt="image" src="https://github.com/user-attachments/assets/085670f7-df8a-41ce-b5aa-4c9acd405d13" />
 
 Terraformでは通常、
@@ -167,7 +168,7 @@ Terraformでは通常、
 指定していたため、それぞれが個別リソースとして
 管理されるものと誤解していた。
 
-## Terraform実装メモ
+### Terraform実装メモ
 <img width="537" height="302" alt="image" src="https://github.com/user-attachments/assets/d282b085-0213-404a-a2e7-edcd1ef95a83" />
 
 for_eachを利用した場合は、
@@ -206,8 +207,23 @@ SSM Endpointを使ったEC2へのログイン確認
 
 プライベート上のEC2インスタンスからインターネットへの接続
 
+<img width="1822" height="863" alt="image" src="https://github.com/user-attachments/assets/f85f7cfd-95d0-4ec3-ad90-7d4c09adaf17" />
 
 
+### つまずきポイント
+
+#### インスタンスへｓｓｍ接続するにはインターフェイス型のエンドポイントが４つ必要
+
+ｓｓｍ接続には管理用（ssmmaneaged）・ec2→ssm・ssm→ec2への専用のエンドポイントが必要という認識しかなかったが
+実際には暗号化通信（kms）を利用するためエンドポイントが必要ということが判明した。
+
+
+### Terraform実装メモ
+
+<img width="1240" height="318" alt="image" src="https://github.com/user-attachments/assets/565a2357-1f2a-453c-ae1c-c36dd4e24194" />
+
+ｓ３へのｓ３エンドポイントを使った接続検証において「aws s3 ls」ではエラーとなったしまった。
+他のリージョンなどを別の作業で使ったりすると場合によってはオプションでリージョンを指定しないと上手く行かない場合があるということが確認できた。
 
 
 
