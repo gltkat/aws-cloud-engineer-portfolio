@@ -106,6 +106,7 @@ EC2
  ↓
 ○ S3 Endpoint
 ```
+
 <img width="657" height="423" alt="image" src="https://github.com/user-attachments/assets/9694c1ea-449c-4d9a-8f60-39e8afb205b5" />
 
 ### 学んだこと
