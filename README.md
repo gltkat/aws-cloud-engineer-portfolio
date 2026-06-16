@@ -158,7 +158,6 @@ stateの修正やimportなどによる復旧が必要になることを学んだ
 S3への通信が制御されることを改めて確認・理解できた。
 
 #### Terrafomにおけるresouceブロック
-<img width="814" height="510" alt="image" src="https://github.com/user-attachments/assets/085670f7-df8a-41ce-b5aa-4c9acd405d13" />
 
 Terraformでは通常、
 1つのresourceブロックから
@@ -206,15 +205,11 @@ S3 Endpoint
 
 SSM Endpointを使ったEC2へのログイン確認
 
-プライベートEC2から外部への通信が出来ないことをEC2のコンソール操作で確認する
-
-Project 01の検証ではNATゲートウェイへのルートを遮断すると
+プライベート上のEC2インスタンスからインターネットへの接続可否を確認する
 
 ## 検証内容
 
-プライベート上のEC2インスタンスからインターネットへの接続
-
-<img width="1822" height="863" alt="image" src="https://github.com/user-attachments/assets/f85f7cfd-95d0-4ec3-ad90-7d4c09adaf17" />
+プライベートEC2から外部への通信が出来ないことをEC2のコンソール操作にて確認する
 
 ```text
 ① NAT Gateway削除
@@ -240,16 +235,82 @@ Systems Manager
 EC2
 ```
 
+NAT Gatewayを利用せず、
+Systems Manager Interface Endpointを利用することで、
+
+インターネット接続を持たない
+プライベートサブネット上のEC2へ
+SSM接続できることを確認する。
+
+Private DNSを利用することで名前解決が
+SSM接続に重要であることを確認する。
+<img width="688" height="421" alt="image" src="https://github.com/user-attachments/assets/7daffea6-6ab8-4621-85f1-3ea15d0529ad" />
+
+### 学んだこと
+
+- SSM接続によってインターネット通信を経由することなくプライベートインスタンスへの接続が達成できる
+
+- SSM接続はEC2からSystems Managerへの
+  アウトバウンド通信で成立する
+
+- Interface EndpointにはSecurity Groupを設定する
+- S3ゲートウェイエンドポイントはルートテーブルで行き先を決めるが
+  インターフェイス型のエンドポイントはIP（名前解決）により通信先が見つける仕様となっている
+
+- Endpoint側でEC2からのTCP443通信を許可する必要がある
+
+- Private DNSを有効化することで
+  AWSサービスのDNS名をEndpointの
+  プライベートIPへ解決できる
+
+- VPCの設定でDNSによる名前解決をプライベートIPに対しても可能になるように設定することが必要
+
 
 ### つまずきポイント
 
-#### インスタンスへｓｓｍ接続するにはインターフェイス型のエンドポイントが４つ必要
+<img width="1822" height="863" alt="image" src="https://github.com/user-attachments/assets/f85f7cfd-95d0-4ec3-ad90-7d4c09adaf17" />
+
+####　SSM接続によるインスタンスへの接続は、インスタンスから能動的に管理側へアクセスしてくることで成立する
+
+管理側はつねにポーリングによりインスタンスからの通信を待ち受けているだけなので中間に位置するインターフェイス型のエンドポイントへのルール設定はingressとなる。
+実装当初はingressなのかegressかで迷うこともあったが演習により基準が明確になった。
+
+#### ｓｓｍ接続するにはインターフェイス型のエンドポイントが４つ必要
 
 ｓｓｍ接続には管理用（ssmmaneaged）・ec2→ssm・ssm→ec2への専用のエンドポイントが必要という認識しかなかったが
-実際には暗号化通信（kms）を利用するためエンドポイントが必要ということが判明した。
+実際には暗号化通信（kms）を利用するためエンドポイントも必要であることを理解・確認できた。
+<img width="681" height="323" alt="image" src="https://github.com/user-attachments/assets/8917c794-896d-46dd-93ed-3b4ca3b4a00c" />
+
+#### Private DNS設定
+
+SSM Interface Endpointを作成しただけでは
+SSM接続できなかった。
+
+原因はVPC側のDNS設定および
+Endpoint側のPrivate DNS設定であった。
+
+Private DNSを有効化することで
+ssm.ap-northeast-1.amazonaws.com が
+EndpointのプライベートIPへ解決される仕組みを理解した。
+
+当初はSecurity GroupやIAMロールの問題と考えていたため
+原因の切り分けに時間を要した。
+
 
 
 ### Terraform実装メモ
+
+Security Groupルールは
+  aws_vpc_security_group_ingress_ruleを利用して
+  個別管理する方法が現在推奨されている
+
+<img width="626" height="516" alt="image" src="https://github.com/user-attachments/assets/c199c840-aff9-404f-93d9-f91426f51978" />
+
+
+
+
+
+
 
 <img width="1240" height="318" alt="image" src="https://github.com/user-attachments/assets/565a2357-1f2a-453c-ae1c-c36dd4e24194" />
 
