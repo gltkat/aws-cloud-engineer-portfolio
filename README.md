@@ -127,6 +127,10 @@ EC2
 
 - S3利用料金自体は別途発生する
 
+- NAT Gatewayの有無により
+プライベートサブネットからの
+インターネット接続可否が決まることを
+実際に検証できた
 
 ### つまずきポイント
 
@@ -201,13 +205,40 @@ S3 Endpoint
 ## 検証目的
 
 SSM Endpointを使ったEC2へのログイン確認
+
 プライベートEC2から外部への通信が出来ないことをEC2のコンソール操作で確認する
+
+Project 01の検証ではNATゲートウェイへのルートを遮断すると
 
 ## 検証内容
 
 プライベート上のEC2インスタンスからインターネットへの接続
 
 <img width="1822" height="863" alt="image" src="https://github.com/user-attachments/assets/f85f7cfd-95d0-4ec3-ad90-7d4c09adaf17" />
+
+```text
+① NAT Gateway削除
+
+Private Subnet
+ ↓
+× Internet
+
+② SSM Endpoint追加
+
+Private Subnet
+ ↓
+○ SSM Endpoint
+ ↓
+Systems Manager
+
+③ Session Manager接続成功
+
+AWS Console
+ ↓
+Systems Manager
+ ↓
+EC2
+```
 
 
 ### つまずきポイント
