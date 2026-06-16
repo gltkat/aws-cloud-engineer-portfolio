@@ -331,26 +331,5 @@ Security Groupルールは
 
 
 
-### 以下作成中エリア
-
-- NATあり構成
-- NATなし構成
-- SSM接続確認
-- S3接続確認
-- ALB負荷分散確認
-- ASG自動復旧確認
-
-#### 検証図
-
-#### 学んだこと
-
-- EndpointによるAWSサービス接続
-- NAT Gatewayとの違い
-- Private DNSの重要性
-
-
-
-
-
 
 
