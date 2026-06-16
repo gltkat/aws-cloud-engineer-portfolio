@@ -269,12 +269,10 @@ SSM接続に重要であることを確認する。
 
 ### つまずきポイント
 
-<img width="1822" height="863" alt="image" src="https://github.com/user-attachments/assets/f85f7cfd-95d0-4ec3-ad90-7d4c09adaf17" />
+<img width="1842" height="850" alt="image" src="https://github.com/user-attachments/assets/ed0f490f-a646-4b62-8cb7-85324996f31b" />
 
 
-
-
-####　SSM接続によるインスタンスへの接続は、インスタンスから能動的に管理側へアクセスしてくることで成立する
+#### SSM接続によるインスタンスへの接続は、インスタンスから能動的に管理側へアクセスしてくることで成立する
 
 管理側はつねにポーリングによりインスタンスからの通信を待ち受けているだけなので中間に位置するインターフェイス型のエンドポイントへのルール設定はingressとなる。
 実装当初はingressなのかegressかで迷うこともあったが演習により基準が明確になった。
