@@ -71,8 +71,9 @@ Private-C
 
 S3 Endpoint
 ```
-<img width="717" height="427" alt="image" src="https://github.com/user-attachments/assets/3e3eb2e7-14e5-4067-8cdd-f279a4e17389" />
-<img width="1458" height="771" alt="image" src="https://github.com/user-attachments/assets/586b1ff4-8bb7-4b3c-bf0e-c790568933f8" />
+<img width="506" height="438" alt="image" src="https://github.com/user-attachments/assets/8052798a-6fe8-409a-98d0-3b3f310ce013" />
+
+<img width="1150" height="616" alt="image" src="https://github.com/user-attachments/assets/d6315007-1421-48d1-b1d9-05d5d2cf262e" />
 
 ### 検証目的
 
@@ -107,7 +108,8 @@ EC2
 ○ S3 Endpoint
 ```
 
-<img width="657" height="423" alt="image" src="https://github.com/user-attachments/assets/9694c1ea-449c-4d9a-8f60-39e8afb205b5" />
+<img width="490" height="301" alt="image" src="https://github.com/user-attachments/assets/1f78d48c-5d9b-4e03-8996-db0d307be882" />
+
 
 ### 学んだこと
 
@@ -215,7 +217,6 @@ SSM Endpointを使ったEC2へのログイン確認
 
 ## 検証内容
 
-プライベートEC2から外部への通信が出来ないことをEC2のコンソール操作にて確認する
 
 ```text
 ① NAT Gateway削除
@@ -239,17 +240,29 @@ AWS Console
 Systems Manager
  ↓
 EC2
+
+④ インターネット接続不可を確認
+
+EC2
+ ↓
+curl google.com
+ ↓
+× 接続不可
 ```
 
-NAT Gatewayを利用せず、
-Systems Manager Interface Endpointを利用することで、
+① NAT Gatewayを削除し、
+   プライベートサブネットから
+   インターネットへ接続できないことを確認
 
-インターネット接続を持たない
-プライベートサブネット上のEC2へ
-SSM接続できることを確認する。
+② Systems Manager Interface Endpointを追加
 
-Private DNSを利用することで名前解決が
-SSM接続に重要であることを確認する。
+③ Session Managerによる接続を確認
+
+④ NAT Gatewayが存在しなくても
+   EC2へ管理アクセスできることを確認
+
+
+
 <img width="688" height="421" alt="image" src="https://github.com/user-attachments/assets/7daffea6-6ab8-4621-85f1-3ea15d0529ad" />
 
 ### 学んだこと
