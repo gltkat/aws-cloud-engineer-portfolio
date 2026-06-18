@@ -41,6 +41,7 @@ EC2 × 2 (ASG)
 NAT Gateway
 ```
 
+<br><br><br>
 # Project 01
 ## TerraformによるAWS 2AZ高可用性環境構築
 
@@ -75,6 +76,7 @@ S3 Endpoint
 
 <img width="1150" height="616" alt="image" src="https://github.com/user-attachments/assets/d6315007-1421-48d1-b1d9-05d5d2cf262e" />
 
+<br><br><br>
 ### 検証目的
 
 プライベートサブネット上のEC2が
@@ -135,6 +137,8 @@ EC2
 インターネット接続可否が決まることを
 実際に検証できた
 
+<br><br><br>
+
 ### つまずきポイント
 
 #### NAT GatewayにSecurity Groupは設定できない
@@ -174,16 +178,10 @@ Terraformでは通常、
 指定していたため、それぞれが個別リソースとして
 管理されるものと誤解していた。
 
-### Terraform実装メモ
-<img width="537" height="302" alt="image" src="https://github.com/user-attachments/assets/d282b085-0213-404a-a2e7-edcd1ef95a83" />
-
-for_eachを利用した場合は、
-同じ設定内容から複数の管理対象が作成される。
+<br><br><br>
 
 
-
-
-
+---
 # Project 02
 
 
@@ -262,8 +260,9 @@ curl google.com
    EC2へ管理アクセスできることを確認
 
 
+<img width="534" height="266" alt="image" src="https://github.com/user-attachments/assets/e0ec6150-cba4-4fdc-b447-33e9347b40c6" />
 
-<img width="688" height="421" alt="image" src="https://github.com/user-attachments/assets/7daffea6-6ab8-4621-85f1-3ea15d0529ad" />
+
 
 ### 学んだこと
 
@@ -273,6 +272,13 @@ curl google.com
 
 - NAT GatewayとInterface Endpointは
   用途が異なる
+
+- Interface EndpointはENIとして作成されるため
+  配置先サブネットを指定する必要がある
+
+- Endpointを複数AZへ配置することで
+  単一AZ障害時にも利用できる構成にできる
+
 
 - Private DNSを利用することで
   AWSサービスの名前解決を
@@ -284,9 +290,7 @@ curl google.com
   実際に検証できた
 
 
-
-
-
+<br><br><br>
   
 
 ### つまずきポイント
@@ -320,10 +324,11 @@ EndpointのプライベートIPへ解決される仕組みを理解した。
 当初はSecurity GroupやIAMロールの問題と考えていたため
 原因の切り分けに時間を要した。
 
-
+---
 
 ### Terraform実装メモ
 
+####その１
 Security Groupルールは
   aws_vpc_security_group_ingress_ruleを利用して
   個別管理する方法が現在推奨されている
@@ -332,16 +337,25 @@ Security Groupルールは
 
 
 
+<br><br><br>
+
+#### その２
+
+for_eachを利用した場合は、
+同じ設定内容から複数の管理対象が作成される。
+
+<img width="537" height="302" alt="image" src="https://github.com/user-attachments/assets/d282b085-0213-404a-a2e7-edcd1ef95a83" />
+
+<br><br><br>
 
 
-
-
-<img width="1240" height="318" alt="image" src="https://github.com/user-attachments/assets/565a2357-1f2a-453c-ae1c-c36dd4e24194" />
-
+#### その３
 ｓ３へのｓ３エンドポイントを使った接続検証において「aws s3 ls」ではエラーとなったしまった。
-他のリージョンなどを別の作業で使ったりすると場合によってはオプションでリージョンを指定しないと上手く行かない場合があるということが確認できた。
 
+他のリージョンなどを別の作業で使ったりすると場合によっては
+オプションでリージョンを指定しないと上手く行かない場合があることが確認できた。
 
+<img width="769" height="304" alt="image" src="https://github.com/user-attachments/assets/e84d60f9-0ec8-4031-8a9a-9067df0e1f88" />
 
 
 
