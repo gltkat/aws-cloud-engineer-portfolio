@@ -303,7 +303,7 @@ Ingressルールが必要であることを確認できた。
 
 ---
 
-#### ssm接続するにはインターフェイス型のエンドポイントが４つ必要
+#### SSM接続にはインターフェイス型エンドポイントが4つ必要
 
 <img width="681" height="323" alt="image" src="https://github.com/user-attachments/assets/8917c794-896d-46dd-93ed-3b4ca3b4a00c" />
 
