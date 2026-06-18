@@ -259,35 +259,21 @@ curl google.com
 ④ NAT Gatewayが存在しなくても
    EC2へ管理アクセスできることを確認
 
+<img width="1779" height="756" alt="image" src="https://github.com/user-attachments/assets/5cef0b7b-f7dd-4baa-91df-97e32f7e0192" />
 
-<img width="534" height="266" alt="image" src="https://github.com/user-attachments/assets/e0ec6150-cba4-4fdc-b447-33e9347b40c6" />
 
 
 
 ### 学んだこと
 
-- Interface Endpointを利用することで
-  インターネットを経由せずに
-  AWSサービスへ接続できる
+- Interface Endpointを利用すると
+  AWSサービスへプライベート接続できる
 
-- NAT GatewayとInterface Endpointは
-  用途が異なる
+- Private DNSによりAWSサービス名をEndpointへ解決できる
 
-- Interface EndpointはENIとして作成されるため
-  配置先サブネットを指定する必要がある
+- SSM Endpointによりインターネット接続なしでEC2へ管理アクセスできる
 
-- Endpointを複数AZへ配置することで
-  単一AZ障害時にも利用できる構成にできる
-
-
-- Private DNSを利用することで
-  AWSサービスの名前解決を
-  VPC内Endpointへ向けられる
-
-- SSM Interface Endpointを利用することで
-  プライベートサブネット上のEC2へ
-  インターネット接続なしで管理アクセスできることを
-  実際に検証できた
+- NAT Gatewayを利用しなくてもSystems Manager経由で管理できることを実際に検証できた
 
 
 <br><br><br>
@@ -295,24 +281,46 @@ curl google.com
 
 ### つまずきポイント
 
-<img width="1842" height="850" alt="image" src="https://github.com/user-attachments/assets/ed0f490f-a646-4b62-8cb7-85324996f31b" />
+#### Interface EndpointのSecurity Group設定
+
+<img width="600" height="240" alt="image" src="https://github.com/user-attachments/assets/652ca74e-8f35-41c3-9564-74172a6f4d17" />
 
 
-#### SSM接続によるインスタンスへの接続は、インスタンスから能動的に管理側へアクセスしてくることで成立する
+実装当初はInterface Endpointに設定する
+Security Groupのルールを
+IngressにするべきかEgressにするべきか迷ってしまった。
 
-管理側はつねにポーリングによりインスタンスからの通信を待ち受けているだけなので中間に位置するインターフェイス型のエンドポイントへのルール設定はingressとなる。
-実装当初はingressなのかegressかで迷うこともあったが演習により基準が明確になった。
+調査を進める中で、
+SSM接続は管理端末からEC2へ接続するのではなく、
+EC2側からSystems Managerへ通信を開始する仕組みであることを理解した。
 
-#### ｓｓｍ接続するにはインターフェイス型のエンドポイントが４つ必要
+そのためInterface Endpoint側では
+EC2からのHTTPS通信を受け付けるための
+Ingressルールが必要であることを確認できた。
 
-ｓｓｍ接続には管理用（ssmmaneaged）・ec2→ssm・ssm→ec2への専用のエンドポイントが必要という認識しかなかったが
-実際には暗号化通信（kms）を利用するためエンドポイントも必要であることを理解・確認できた。
+---
+
+#### ssm接続するにはインターフェイス型のエンドポイントが４つ必要
+
 <img width="681" height="323" alt="image" src="https://github.com/user-attachments/assets/8917c794-896d-46dd-93ed-3b4ca3b4a00c" />
+
+当初はssm接続には３つのエンドポイントが必要だと思い込んでいたが
+それだけでは接続を成功させることが出来なかった。
+
+管理用（ssmmaneaged）・ec2→ssm・ssm→ec2への用途ごとの専用エンドポイント以外に、
+暗号化通信（kms）を利用するためのエンドポイントが必要となることを理解した。
+
+---
 
 #### Private DNS設定
 
-SSM Interface Endpointを作成しただけでは
-SSM接続できなかった。
+<img width="534" height="266" alt="image" src="https://github.com/user-attachments/assets/fd0e9794-80d9-4146-bac3-0a2482c966dc" />
+
+<img width="537" height="258" alt="image" src="https://github.com/user-attachments/assets/b9fc0ac1-27d2-4373-b942-be924cdacca5" />
+
+
+Interface Endpointを正しく設定しただけでは
+SSM接続を成功させられなかった。
 
 原因はVPC側のDNS設定および
 Endpoint側のPrivate DNS設定であった。
@@ -322,41 +330,43 @@ ssm.ap-northeast-1.amazonaws.com が
 EndpointのプライベートIPへ解決される仕組みを理解した。
 
 当初はSecurity GroupやIAMロールの問題と考えていたため
-原因の切り分けに時間を要した。
+原因の切り分けに時間を要してしまった。
 
----
+<br><br><br>
 
 ### Terraform実装メモ
 
-####その１
-Security Groupルールは
-  aws_vpc_security_group_ingress_ruleを利用して
-  個別管理する方法が現在推奨されている
+#### その１
+
+
 
 <img width="626" height="516" alt="image" src="https://github.com/user-attachments/assets/c199c840-aff9-404f-93d9-f91426f51978" />
 
-
+Security Groupルールは
+  aws_vpc_security_group_ingress_ruleを利用して
+  個別管理する方法が現在推奨されている
 
 <br><br><br>
 
 #### その２
 
-for_eachを利用した場合は、
-同じ設定内容から複数の管理対象が作成される。
 
 <img width="537" height="302" alt="image" src="https://github.com/user-attachments/assets/d282b085-0213-404a-a2e7-edcd1ef95a83" />
 
+
+for_eachを利用した場合は、
+同じ設定内容から複数の管理対象が作成される。
+
 <br><br><br>
 
-
 #### その３
+
+<img width="769" height="304" alt="image" src="https://github.com/user-attachments/assets/e84d60f9-0ec8-4031-8a9a-9067df0e1f88" />
+
 ｓ３へのｓ３エンドポイントを使った接続検証において「aws s3 ls」ではエラーとなったしまった。
 
 他のリージョンなどを別の作業で使ったりすると場合によっては
 オプションでリージョンを指定しないと上手く行かない場合があることが確認できた。
-
-<img width="769" height="304" alt="image" src="https://github.com/user-attachments/assets/e84d60f9-0ec8-4031-8a9a-9067df0e1f88" />
-
 
 
 
