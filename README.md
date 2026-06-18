@@ -273,7 +273,10 @@ curl google.com
 
 - SSM Endpointによりインターネット接続なしでEC2へ管理アクセスできる
 
-- NAT Gatewayを利用しなくてもSystems Manager経由で管理できることを実際に検証できた
+- SSM Interface Endpointを利用することで
+  プライベートサブネット上のEC2へ
+  インターネット接続なしで管理アクセスできることを
+  実際に検証できた
 
 
 <br><br><br>
