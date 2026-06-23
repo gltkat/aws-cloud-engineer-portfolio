@@ -183,7 +183,7 @@ Terraformでは通常、
 
 ---
 # Project 02
-
+##　ssm接続の追加
 
 ## 詳細構成図
 
@@ -341,6 +341,44 @@ EndpointのプライベートIPへ解決される仕組みを理解した。
 
 ---
 # Project 03
+
+## ALBの追加
+
+## 詳細構成図
+
+### ALBを追加した構成
+
+```text
+ALB
+ ↓
+EC2
+SSM Endpoint
+
+```
+
+## 検証目的
+
+ALBヘルスチェック機能の確認
+
+## 検証内容
+
+Terraformにて構築後、UI操作で片側インスタンスを停止しALBヘルスチェック内容を確認する
+
+### 学んだこと
+UI上から片側のインスタンスを停止するとターゲットグループのヘルスチェックで異常となることが確認できた。
+<img width="1372" height="1000" alt="image" src="https://github.com/user-attachments/assets/20884668-8423-4eea-93ab-013000d7d76c" />
+
+### つまずきポイント
+Terraformにて構築した際にUI上でインスタンスは正常に動いていることが確認できているのにヘルスチェック機能では異常となっていた
+理由はインスタンス上のWebサーバーが応答していないことにあったが何故か理由が分からなかった。
+原因はNATゲートウェイが無いことでインスタンス起動時にWebサーバーをダウンロード出来ないことにあった。
+<img width="692" height="417" alt="image" src="https://github.com/user-attachments/assets/3707402c-beea-4f38-9090-9deb802cf9dc" />
+
+NATゲートウェイの設定を含む構成をプロビジョニングすることでインスタンスにWebサーバーを導入しヘルスチェックを正常にもっていくことが出来たのでALBの動作検証を行うことができるようになった。
+
+<img width="1157" height="693" alt="image" src="https://github.com/user-attachments/assets/2914111d-ef44-4aab-9bcd-e8b71f3816ac" />
+
+インスタンス上でWebサーバーが立ち上がっていることが確認できた後にNATゲートウェイを削除してしまってもALBのヘルスチェックは正常に反応し続けることを確認できた。
 
 
 
