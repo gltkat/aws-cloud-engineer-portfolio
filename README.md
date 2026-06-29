@@ -183,6 +183,7 @@ Terraformでは通常、
 
 ---
 # Project 02
+
 ##　ssm接続の追加
 
 ## 詳細構成図
@@ -477,6 +478,67 @@ ALBヘルスチェック正常
 
 <br><br><br>
 
+
+
+---
+
+# Project 04
+
+##　Launch Templateを中心としたEC2の自動展開基盤の構築
+
+## 詳細構成図
+
+### Auto Scaling Groupを追加した構成
+
+```text
+
+                Internet
+                    │
+                    │
+             ┌────────────┐
+             │     ALB    │
+             └─────┬──────┘
+                   │
+             Target Group
+                   │
+      ┌────────────┴────────────┐
+      │                         │
+┌─────────────┐          ┌─────────────┐
+│   EC2(AZ-a) │          │   EC2(AZ-c) │
+│ Auto Scaling│          │ Auto Scaling│
+└──────┬──────┘          └──────┬──────┘
+       │                         │
+       └────────────┬────────────┘
+                    │
+          Auto Scaling Group
+                    │
+           Launch Template
+                    │
+        UserData / IAM Role /
+           Instance Profile
+
+
+```
+
+### 学んだこと
+
+
+
+
+
+
+
+
+### つまずきポイント
+
+
+
+
+
+
+
+<br><br><br>
+
 # AWS学習ログ
 
 ### ALBとターゲットグループ
@@ -503,19 +565,11 @@ load_balancer {
 }
 
 ```
+実装と資格学習を往復することで、サービスの仕組みへの理解を深めることができた。
 
-実装と資格学習を往復することで、
-サービスの仕組みへの理解を深めることができた。
+<br><br><br>
 
-
-
-
-
-
-
-
-
-#### その１
+#### その他１
 
 
 
@@ -527,7 +581,7 @@ Security Groupルールは
 
 <br><br><br>
 
-#### その２
+#### その他２
 
 
 <img width="537" height="302" alt="image" src="https://github.com/user-attachments/assets/d282b085-0213-404a-a2e7-edcd1ef95a83" />
@@ -538,7 +592,7 @@ for_eachを利用した場合は、
 
 <br><br><br>
 
-#### その３
+#### その他３
 
 <img width="769" height="304" alt="image" src="https://github.com/user-attachments/assets/e84d60f9-0ec8-4031-8a9a-9067df0e1f88" />
 
