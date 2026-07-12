@@ -484,7 +484,7 @@ ALBヘルスチェック正常
 
 # Project 04
 
-##　Launch Templateを中心としたEC2の自動展開基盤の構築
+## Launch Templateを中心としたEC2の自動展開基盤の構築
 
 ## 詳細構成図
 
@@ -520,27 +520,15 @@ ALBヘルスチェック正常
 
 ### 学んだこと
 
-※※修正版ーーーコメント
-学んだことについては今回の作成構成について素朴な学びについて端的に記載する設計に変更
-最重要なポイントであったCloudFormationとTerraformの差異にについては
-新たな項目として『考察』にて展開することにした
+- Launch TemplateにはAMI・UserData・IAM設定など、EC2の構成情報をまとめて定義できる
 
-ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー以下草稿ーーーーーーー
+- Auto Scaling GroupはLaunch Templateを利用してEC2を起動・終了し、起動したEC2をTarget Groupへ自動登録する
 
-- Launch TemplateにEC2のAMI・UserData・IAM設定を定義することで、
-同じ構成のEC2を自動展開できる
+- EC2へIAMロールを付与する際は、TerraformではInstance ProfileをLaunch Templateへ指定する必要がある
 
-- Auto Scaling GroupはLaunch Templateを利用してEC2を起動・終了する
 
-- Auto Scaling Groupは起動したEC2をTarget Groupへ自動登録する
 
-- EC2へIAMロールを付与する際は、TerraformではInstance Profileを指定する
-
-- Instance Profileには1つのIAMロールを関連付けることができ、
-そのIAMロールには複数のIAMポリシーをアタッチできる
-
-- Launch Templateへ必要な設定をまとめることで、
-自動生成されるEC2すべてへ同じ構成を適用できることを実際に検証できた
+- Launch TemplateとAuto Scaling Groupを組み合わせることで、同一構成のEC2を自動展開できることを実際に確認した
 
 - Target GroupはALB専用のリソースではなく、ALBが転送先として利用し、
 Auto Scaling GroupがEC2を登録するための橋渡しとなるリソースであることを理解した。
@@ -608,6 +596,7 @@ Auto Scaling Groupを追加すれば自動的にEC2が起動すると考えて�
 Launch Template内でInstance Profileを指定する必要がある点の理解に時間を要してしまった。
 
 
+ーーーー
 
 ### 考察
 CloudFormationを使った実装経験があるにもかかわらず
@@ -625,67 +614,43 @@ Terraformがそれぞれのファイルに記載されたリソースから独�
 - VPCやALB・ASGといった形でtfファイルを分けて作成しはじめたことで困難が深まっていったように感じた
 
 
-#### YAMLを使うCloudFormationは「完成図」に近い
+#### CloudFormationは「完成した構成」を記述する
 
-CloudFormationはAWSの構築部品の完成した設計図といえる。
+CloudFormationではAuto Scaling Groupの設定項目として
 
-AutoScalingGroup:という項目以下インデントに注意しながら
-AutoScalingGroupNameやLaunchTemplateや TargetGroupやVPCZoneIdentifier等々記載していくが
+Launch TemplateやTarget Groupなどを記述していたため、
 
-これらの項目の繋がりについて意識することはほとんどなかった。
+それぞれの役割や責務を深く意識することは少なかった。
 
-必要な項目が形式的にそろっていることに注意が払われていた。
+YAMLという書式の特徴であるインデントの不備などに注意が向けられていた。
 
 
-####　Terraformは責務の分離を考えて記載する必要がある
+#### Terraformは「構成部品」を組み立てる
 
-「なぜLaunch Templateが独立したリソースなのか」
+Terraformでは様々なAPIに個別に対応した形でリソースを記述する。
 
-「なぜTarget GroupはALB専用ではなASGからも参照されるのか」
+Launch Template・Target Group・Instance Profileなどを独立したリソースとして実装しなくてはならない。
 
-「なぜInstance Profileという層があるのか」て
+<img width="526" height="351" alt="image" src="https://github.com/user-attachments/assets/2f50926b-035f-4608-b5f9-79ce64def866" />
 
-といった、リソース同士の責務や設計意図を確認したり
-Terraformは「部品」に近いという感覚に至るまで時間を擁してしまった。
+実装を進める中で、
 
-CloudFormationでは「AWSサービス」を構築していたが、
-Terraformではそのサービスを構成するリソース同士の責務や依存関係を意識して実装するようになった。
+- Launch TemplateがEC2の構成を定義すること
+
+- Auto Scaling GroupがLaunch Templateを利用してEC2を管理すること
+
+- Target GroupがALBとAuto Scaling Group双方から利用されること
+
+など、各リソースの責務や依存関係を理解することができた。
+
 
 ### 考察を終えて
 
-「CloudFormationでは完成したサービスとして扱っていたものを、
-Terraformでは複数のリソースに分解して実装したことで、各リソースの責務を理解できた」
+CloudFormationでは完成したサービスとして扱っていた構成を
 
+Terraformではリソース単位で実装したことで
 
-####　備考
-
-CloudFormationではAWSサービスを構築することを意識していたが、Terraformでは各リソースの責務や依存関係を意識して実装するようになった。
-
-Launch TemplateにはAMI・UserData・Instance Profileなど、EC2の構成を定義する。
-
-Auto Scaling GroupはLaunch Templateを利用してEC2を起動・終了し、Target Groupへ自動登録する。
-
-Instance Profileを介してIAMロールをEC2へ付与する仕組みを理解した。
-
-tfファイルを機能ごとに分割していても、Terraformは各リソースの参照関係から一つの構成として管理できることを理解した。
-
-CloudFormationで利用していたAWSサービスを、Terraformではリソース単位で実装することで、それぞれの責務をより具体的に理解できた。
-
-「Auto Scaling GroupがEC2を生成する」という理解に留まっていたが、
-
-調査を進める中で、EC2そのものの構成はLaunch Templateが定義し、
-
-Auto Scaling GroupはLaunch Templateを利用してEC2を管理する役割であることを理解した。
-
-また、Target GroupはALB専用のリソースではなく、
-
-ALBは転送先として利用し、Auto Scaling Groupは起動したEC2を登録するという、
-双方から利用されるリソースであることを理解できた。
-
-CloudFormationでは一つのサービスとして扱っていた構成を、
-Terraformではリソース単位で組み立てる経験を通じて、
-AWSサービスを構成する各リソースの責務をより深く理解することができた。
-
+AWSサービスを構成する各リソースの責務や依存関係を以前より具体的に理解できた。
 
 <br><br><br>
 
@@ -751,5 +716,7 @@ for_eachを利用した場合は、
 他のリージョンなどを別の作業で使ったりすると場合によっては
 オプションでリージョンを指定しないと上手く行かない場合があることが確認できた。
 
+#### その他4
 
-
+- Instance Profileには1つのIAMロールを関連付けることができ、
+そのIAMロールには複数のIAMポリシーをアタッチできる
