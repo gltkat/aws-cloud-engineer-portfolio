@@ -489,7 +489,6 @@ ALBヘルスチェック正常
 ## 詳細構成図
 
 ### Auto Scaling Groupを追加した構成
-
 ```text
 
                 Internet
@@ -516,67 +515,176 @@ ALBヘルスチェック正常
                     │
         UserData / IAM Role /
            Instance Profile
-
-
 ```
+
 
 ### 学んだこと
 
-※※修正版ーーーメインテーマ（下記を主題として学んだ点を作成する）
-- CloudFormationでは「AWSサービス」を構築していたが、
-Terraformではそのサービスを構成するリソース同士の責務や依存関係を意識して実装するようになった。
+※※修正版ーーーコメント
+学んだことについては今回の作成構成について素朴な学びについて端的に記載する設計に変更
+最重要なポイントであったCloudFormationとTerraformの差異にについては
+新たな項目として『考察』にて展開することにした
 
 ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー以下草稿ーーーーーーー
 
-- Terraformでは作成したいサービスを複数のtfファイルに分けて記述することができる
-- 
-- 複数のtfファイルに分かれていてもTerraformが一つのまとまったサービスとして多用な構築部をデブロイできるのは
-Terraformがそれぞれのファイルに記載されたリソースから独断でリソース同志の依存関係を理解し
-一つの構成グラフを作ることができるから
+- Launch TemplateにEC2のAMI・UserData・IAM設定を定義することで、
+同じ構成のEC2を自動展開できる
 
-- 構成グラフがあることで削除時にも正しい順番でリソースを削除することができるようになる
+- Auto Scaling GroupはLaunch Templateを利用してEC2を起動・終了する
 
-- Terraformが依存関係を理解できないような場合には、製作者自身で依存関係に基づいた適切な順序でリソースを作成するよう指示することができる。
+- Auto Scaling Groupは起動したEC2をTarget Groupへ自動登録する
 
-- depends_onは、リソース間の依存関係を明示的に定義するためのメタ引数です。
+- EC2へIAMロールを付与する際は、TerraformではInstance Profileを指定する
 
-- tfファイルを複数に分けて各ファイルにどのようなリソースを記述するか意識するようになった。
-具体的にはCloudFormationでは「AWSサービス」を構築していたが、
-Terraformではそのサービスを構成するリソース同士の責務や依存関係を意識して実装するようになった。
+- Instance Profileには1つのIAMロールを関連付けることができ、
+そのIAMロールには複数のIAMポリシーをアタッチできる
 
+- Launch Templateへ必要な設定をまとめることで、
+自動生成されるEC2すべてへ同じ構成を適用できることを実際に検証できた
 
+- Target GroupはALB専用のリソースではなく、ALBが転送先として利用し、
+Auto Scaling GroupがEC2を登録するための橋渡しとなるリソースであることを理解した。
+
+- Auto Scaling GroupはEC2を管理するリソースであり、
+EC2そのものの設定はLaunch Templateが担うことを学んだ。
 
 
 ーーーー
 
-  
-
-
-
-
-
-
-
-
 ### つまずきポイント
+```text
 
- CloudFormationでスタックを作り作成していた構築物はAWS上でUIを操作し作成される構築物と対の関係で理解していた。
-  そのためスタックにおける各リソースの中身の記載項目については一つの形式として覚える内容に留まっていた。
-  しかしAWS上のサービスはUI上では一つの単体サービスに見えていたとしても、
-  実際には複数のリソースによってサービスが構成されている場合もある。
-  AWSで提供されている一つ一つのAPIに対してTerraformのリソースは作成するものであることが当初は理解できていなかった。
-  そのため・・・・のような失敗をしてしまっていた。
-  （具体的に失敗のエピソードを挿入）
+          Auto Scaling Group					NATなし
+                   │                           　 ↓
+         Launch Template					    UserData失敗
+                   │                            　↓
+        ┌──────────┴──────────┐		          　Apache導入失敗
+        │                     │                　 ↓
+   EC2 Instance A        EC2 Instance C			Target Group 
+        │                     │                	Unhealthy
+   UserData実行          UserData実行				
+        │                     │
+ Apache導入成功        Apache導入成功				 
+        │                     │
+        └──────────┬──────────┘		
+                   │					
+             Target Group					
+                   │
+                  ALB
+```
 
 
 
+#### Launch TemplateとInstance Profileの関係
+
+調査を進める中で、以下のような役割分担を理解することができた。
+```text
+IAM Policy
+
+↓
+
+IAM Role
+
+↓
+
+Instance Profile
+
+↓
+
+Launch Template
+
+↓
+
+Auto Scaling Group
+
+↓
+
+EC2
+```
+Auto Scaling Groupを追加すれば自動的にEC2が起動すると考えていたが、
+実際にはLaunch TemplateにAMI・UserData・IAMなど必要な設定を定義しておかなければ期待したEC2は作成されなかった。
+
+特にIAMロールはAuto Scaling Groupへ直接指定するのではなく、
+Launch Template内でInstance Profileを指定する必要がある点の理解に時間を要してしまった。
 
 
 
+### 考察
+CloudFormationを使った実装経験があるにもかかわらず
+
+同様の構成をTerraformで実装するにあたって想定以上に時間を必要とした理由について
+
+<img width="612" height="458" alt="image" src="https://github.com/user-attachments/assets/75dbc39b-185f-4577-b124-46065d3a613c" />
 
 
 
+#### 原因
+- Terraformにおいてはtfファイルが複数に分かれていても問題ないとされているのは
+Terraformがそれぞれのファイルに記載されたリソースから独自にリソース同志の依存関係を理解できるから
 
+- VPCやALB・ASGといった形でtfファイルを分けて作成しはじめたことで困難が深まっていったように感じた
+
+
+#### YAMLを使うCloudFormationは「完成図」に近い
+
+CloudFormationはAWSの構築部品の完成した設計図といえる。
+
+AutoScalingGroup:という項目以下インデントに注意しながら
+AutoScalingGroupNameやLaunchTemplateや TargetGroupやVPCZoneIdentifier等々記載していくが
+
+これらの項目の繋がりについて意識することはほとんどなかった。
+
+必要な項目が形式的にそろっていることに注意が払われていた。
+
+
+####　Terraformは責務の分離を考えて記載する必要がある
+
+「なぜLaunch Templateが独立したリソースなのか」
+
+「なぜTarget GroupはALB専用ではなASGからも参照されるのか」
+
+「なぜInstance Profileという層があるのか」て
+
+といった、リソース同士の責務や設計意図を確認したり
+Terraformは「部品」に近いという感覚に至るまで時間を擁してしまった。
+
+CloudFormationでは「AWSサービス」を構築していたが、
+Terraformではそのサービスを構成するリソース同士の責務や依存関係を意識して実装するようになった。
+
+### 考察を終えて
+
+「CloudFormationでは完成したサービスとして扱っていたものを、
+Terraformでは複数のリソースに分解して実装したことで、各リソースの責務を理解できた」
+
+
+####　備考
+
+CloudFormationではAWSサービスを構築することを意識していたが、Terraformでは各リソースの責務や依存関係を意識して実装するようになった。
+
+Launch TemplateにはAMI・UserData・Instance Profileなど、EC2の構成を定義する。
+
+Auto Scaling GroupはLaunch Templateを利用してEC2を起動・終了し、Target Groupへ自動登録する。
+
+Instance Profileを介してIAMロールをEC2へ付与する仕組みを理解した。
+
+tfファイルを機能ごとに分割していても、Terraformは各リソースの参照関係から一つの構成として管理できることを理解した。
+
+CloudFormationで利用していたAWSサービスを、Terraformではリソース単位で実装することで、それぞれの責務をより具体的に理解できた。
+
+「Auto Scaling GroupがEC2を生成する」という理解に留まっていたが、
+
+調査を進める中で、EC2そのものの構成はLaunch Templateが定義し、
+
+Auto Scaling GroupはLaunch Templateを利用してEC2を管理する役割であることを理解した。
+
+また、Target GroupはALB専用のリソースではなく、
+
+ALBは転送先として利用し、Auto Scaling Groupは起動したEC2を登録するという、
+双方から利用されるリソースであることを理解できた。
+
+CloudFormationでは一つのサービスとして扱っていた構成を、
+Terraformではリソース単位で組み立てる経験を通じて、
+AWSサービスを構成する各リソースの責務をより深く理解することができた。
 
 
 <br><br><br>
