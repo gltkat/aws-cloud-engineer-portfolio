@@ -74,9 +74,8 @@ S3 Endpoint
 ```
 <img width="506" height="438" alt="image" src="https://github.com/user-attachments/assets/8052798a-6fe8-409a-98d0-3b3f310ce013" />
 
-<img width="1150" height="616" alt="image" src="https://github.com/user-attachments/assets/d6315007-1421-48d1-b1d9-05d5d2cf262e" />
+<br>
 
-<br><br><br>
 ### 検証目的
 
 プライベートサブネット上のEC2が
@@ -112,36 +111,27 @@ EC2
 
 <img width="490" height="301" alt="image" src="https://github.com/user-attachments/assets/1f78d48c-5d9b-4e03-8996-db0d307be882" />
 
-
 ### 学んだこと
 
-- NAT Gatewayはプライベートサブネットから
-  インターネットへのアウトバウンド通信を実現する
+・NAT Gatewayはプライベートサブネットからインターネットへのアウトバウンド通信を実現する
 
-- NAT Gatewayの削除やルートテーブルからの除外により
-  EC2から外部インターネットへの通信が停止する
+・S3 Gateway Endpointを利用すると、NAT Gatewayを経由せずにS3へアクセスできる
 
-- S3 Gateway Endpointを利用することで
-  NAT Gatewayが存在しなくても
-  S3へアクセスできる
-
-- S3 Gateway Endpointを利用することで
-  S3向け通信をNAT Gateway経由にしなくて済む
-
-- NAT Gatewayのデータ処理料金を削減できる
-
-- S3利用料金自体は別途発生する
-
-- NAT Gatewayの有無により
-プライベートサブネットからの
-インターネット接続可否が決まることを
-実際に検証できた
+・NAT Gatewayの有無による通信経路の違いを実機で検証できた
 
 <br><br><br>
 
 ### つまずきポイント
 
-#### NAT GatewayにSecurity Groupは設定できない
+#### その１：NAT GatewayにSecurity Groupを設定しようとした点
+
+**【気付き】**
+・NAT Gatewayは
+Route Tableで通信制御を行う
+
+<br>
+
+**【詳細】**
 
 実装当初EC2と同様にSecurity Groupを設定しようとしてしまっていた（座学での知識が使えていなかった）。
 
@@ -156,7 +146,17 @@ stateファイルとの差異が深刻な状況を招いてしまい躓く点に
 Terraform stateとの不整合が発生した場合は、
 stateの修正やimportなどによる復旧が必要になることを学んだ。
 
-#### S3 Gateway Endpointの通信制御
+<br><br>
+
+#### その２：S3 Gateway Endpointの設定への誤解
+
+**【気付き】**
+・Gateway Endpointには
+Security Groupは設定できない
+
+<br>
+
+**【詳細】**
 
 当初は座学で得た知識を活かせずにSecurity Groupによる制御を行おうとしていた。
 
@@ -164,22 +164,32 @@ stateの修正やimportなどによる復旧が必要になることを学んだ
 ルートテーブルへ自動追加される経路によって
 S3への通信が制御されることを改めて確認・理解できた。
 
-#### Terrafomにおけるresouceブロック
+<br><br>
 
-Terraformでは通常、
+#### その3：for_eachによる複数リソース管理を正しく理解できていなかった
+
+**【気付き】**
+・リソース中にfor_eachの構文を使うと
+複数リソースが生成される
+
+<br>
+
+**【詳細】**
+
+vpcやサブネットを2AZへ均等に作成する場合などにおいて、
+for_eachの構文はマップやリストの違いなどの使い分けに注意が必要であるが、
+記述としてはシンプルに表現できるので好ましいと感じていた。
+
+しかしTerraformでは通常、
+1つのresourceブロックから1つの管理対象が作成される原則にもかかわらず、
+for_eachを利用した場合は、
 1つのresourceブロックから
-1つの管理対象が作成される。
+複数の管理対象が作成されてしまう。
 
-ただしfor_eachを利用した場合は、
-1つのresourceブロックから
-複数の管理対象が作成される。
-
-当初はresourceブロック内で複数SubnetやRouteTableを
-指定していたため、それぞれが個別リソースとして
-管理されるものと誤解していた。
+構成を整理する中で各Subnetを個別のresourceとして記述し直したことで、
+Terraformがリソース単位で状態を管理していることをより意識できるようになった。
 
 <br><br><br>
-
 
 ---
 # Project 02
