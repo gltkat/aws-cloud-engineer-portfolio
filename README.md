@@ -92,13 +92,13 @@ S3へアクセス可能であることを確認する。
 プライベート上のEC2インスタンスからインターネットへの接続
 
 ```text
-NATあり
+【NATあり】
 
 EC2
  ↓
 Internet
 
-NATなし
+【NATなし】
 
 EC2
  ↓
@@ -117,7 +117,9 @@ EC2
 
 ・S3 Gateway Endpointを利用すると、NAT Gatewayを経由せずにS3へアクセスできる
 
-・NAT Gatewayの有無による通信経路の違いを実機で検証できた
+・NAT GatewayとS3 Gateway Endpointの役割の違いを実機で検証できた
+
+・Terraformではresource単位で状態管理が行われることを理解できた
 
 <br><br><br>
 
@@ -126,7 +128,7 @@ EC2
 #### その１：NAT GatewayにSecurity Groupを設定しようとした点
 
 **【気付き】**
-・NAT Gatewayは
+ NAT Gatewayは
 Route Tableで通信制御を行う
 
 <br>
@@ -141,17 +143,19 @@ Route Tableで通信制御を行う
 当初はNAT Gatewayの削除をブラウザ上のUIで気軽に行ってしまったりもしたが
 stateファイルとの差異が深刻な状況を招いてしまい躓く点になっていた。
 
-現在ではリソースそのものや記載部分をコメントアウトするなどした後にTerraform上からapplyすることを心掛けるようになった。
+現在ではリソースそのものや該当箇所をコメントアウトするなどした後にTerraform上からapplyすることを心掛けるようになった。
 
 Terraform stateとの不整合が発生した場合は、
 stateの修正やimportなどによる復旧が必要になることを学んだ。
 
-<br><br>
+<br>
+
+---
 
 #### その２：S3 Gateway Endpointの設定への誤解
 
 **【気付き】**
-・Gateway Endpointには
+ Gateway Endpointには
 Security Groupは設定できない
 
 <br>
@@ -164,7 +168,9 @@ Security Groupは設定できない
 ルートテーブルへ自動追加される経路によって
 S3への通信が制御されることを改めて確認・理解できた。
 
-<br><br>
+<br>
+
+---
 
 #### その3：for_eachによる複数リソース管理を正しく理解できていなかった
 
@@ -175,26 +181,24 @@ S3への通信が制御されることを改めて確認・理解できた。
 <br>
 
 **【詳細】**
-
-vpcやサブネットを2AZへ均等に作成する場合などにおいて、
-for_eachの構文はマップやリストの違いなどの使い分けに注意が必要であるが、
-記述としてはシンプルに表現できるので好ましいと感じていた。
-
-しかしTerraformでは通常、
-1つのresourceブロックから1つの管理対象が作成される原則にもかかわらず、
-for_eachを利用した場合は、
-1つのresourceブロックから
-複数の管理対象が作成されてしまう。
+当初はfor_eachの構文を使う方がシンプルに感じていた。
 
 構成を整理する中で各Subnetを個別のresourceとして記述し直したことで、
-Terraformがリソース単位で状態を管理していることをより意識できるようになった。
+Terraformがリソース単位で状態を管理していることをより意識できるようになった。 
+
+Terraformでは通常、1つのresourceブロックが1つの管理対象としてTerraform Stateへ登録される。
+
+一方、for_eachを利用した場合は、
+1つのresourceブロックから複数の管理対象が生成され、それぞれがTerraform Stateへ独立したリソースとして登録される。
+
+
 
 <br><br><br>
 
 ---
 # Project 02
 
-##　ssm接続の追加
+## ssm接続の追加
 
 ## 詳細構成図
 
@@ -257,6 +261,7 @@ EC2
 curl google.com
  ↓
 × 接続不可
+
 ```
 
 ① NAT Gatewayを削除し、
@@ -280,9 +285,9 @@ curl google.com
 - Interface Endpointを利用すると
   AWSサービスへプライベート接続できる
 
-- Private DNSによりAWSサービス名をEndpointへ解決できる
-
 - SSM Endpointによりインターネット接続なしでEC2へ管理アクセスできる
+
+- Private DNSによりAWSサービス名をEndpointへ解決できる
 
 - SSM Interface Endpointを利用することで
   プライベートサブネット上のEC2へ
@@ -295,43 +300,69 @@ curl google.com
 
 ### つまずきポイント
 
-#### Interface EndpointのSecurity Group設定
+#### その１： エンドポイントに付けるSecurity GroupをEgressで設定していた誤り
+
+**【気付き】**
+ Iacにおいては理解していたつもりでも勘違いで真逆で設定してしまう危険がある
+
+<br>
+
+
+**【詳細】**
 
 <img width="600" height="240" alt="image" src="https://github.com/user-attachments/assets/652ca74e-8f35-41c3-9564-74172a6f4d17" />
 
+実装当初においてInterface Endpointに設定する
+Security GroupのルールをEgressで設定してしまっていた。
 
-実装当初はInterface Endpointに設定する
-Security Groupのルールを
-IngressにするべきかEgressにするべきか迷ってしまった。
-
-調査を進める中で、
-SSM接続は管理端末からEC2へ接続するのではなく、
-EC2側からSystems Managerへ通信を開始する仕組みであることを理解した。
+AWSの管理領域とEC2インスタンの中間にエンドポイントは位置している。
 
 そのためInterface Endpoint側では
 EC2からのHTTPS通信を受け付けるための
-Ingressルールが必要であることを確認できた。
+Ingressルールが必要である。
+
+実装作業において不意に勘違いしてコードを入力してしまう怖さを知ると共に
+SSM接続は管理端末からEC2へ接続するのではなく、
+EC2側からSystems Managerへ通信を開始する仕組みであることを確認できた。
+
+<br>
 
 ---
 
-#### SSM接続にはインターフェイス型エンドポイントが4つ必要
+#### その2：必要となるインターフェイス型エンドポイントの作成数を間違っていたこと
+
+**【気付き】**
+ SSM接続にはインターフェイス型エンドポイントが4つ必要
+
+<br>
+
+**【詳細】**
 
 <img width="681" height="323" alt="image" src="https://github.com/user-attachments/assets/8917c794-896d-46dd-93ed-3b4ca3b4a00c" />
 
-当初はssm接続には３つのエンドポイントが必要だと思い込んでいたが
-それだけでは接続を成功させることが出来なかった。
+当初はssm接続には３つのエンドポイントが必要だと思い込んでいた。
+
+しかし実際にはそれだけでは接続を成功させることが出来なかった。
 
 管理用（ssmmaneaged）・ec2→ssm・ssm→ec2への用途ごとの専用エンドポイント以外に、
 暗号化通信（kms）を利用するためのエンドポイントが必要となることを理解した。
 
+<br>
+
 ---
 
-#### Private DNS設定
+#### その3： AWS内部における名前解決の重要性を認識出来ていなかった点 
+
+**【気付き】**
+ Private DNS設定を有効化しておく必要がある
+
+<br>
+
+**【詳細】**
 
 <img width="534" height="266" alt="image" src="https://github.com/user-attachments/assets/fd0e9794-80d9-4146-bac3-0a2482c966dc" />
 
 <img width="537" height="258" alt="image" src="https://github.com/user-attachments/assets/b9fc0ac1-27d2-4373-b942-be924cdacca5" />
-
 
 Interface Endpointを正しく設定しただけでは
 SSM接続を成功させられなかった。
