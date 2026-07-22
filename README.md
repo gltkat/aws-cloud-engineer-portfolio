@@ -202,22 +202,10 @@ Terraformでは通常、1つのresourceブロックが1つの管理対象とし�
 
 
 
-
-
-
-
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-
-「Systems Managerの通信経路を理解するまでの試行錯誤」
-
-という作品
-
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-
 ---
 # Project 02
 
-## ssm接続における通信経路の理解と検証
+## Systems Managerを用いてプライベートネットワーク上のEC2インスタンスへアクセスする
 
 ## 詳細構成図
 
@@ -243,7 +231,7 @@ S3 Endpoint
 ```
 ## 検証目的
 
-Systems Managerを利用してEC2インスタンとの通信状況を確認する
+Systems Managerを利用してEC2インスタンと交信し外部との通信状況を確認する
 
 ・SSM Endpointを使ったEC2へのログイン確認
 
@@ -305,20 +293,29 @@ curl google.com
 - Interface Endpointを利用すると
   AWSサービスへプライベート接続できる
 
-- SSM Endpointによりインターネット接続なしでEC2へ管理アクセスできる
+- SSM Interface Endpointによりインターネット接続なしでEC2へ管理アクセスできる
 
 - Private DNSによりAWSサービス名をEndpointへ解決できる
 
-- SSM Interface Endpointを利用することで
-  プライベートサブネット上のEC2へ
-  インターネット接続なしで管理アクセスできることを
-  実際に検証できた
-
+- 実装作業そのものについてよりも、
+EC2がSystems Managerへ通信を開始する仕組みや、
+Interface Endpoint・Security Group・Private DNSが連携して通信経路を構成している点を深く確認・理解することができた。
 
 <br><br><br>
   
 
 ### つまずきポイント
+
+<img width="833" height="947" alt="image" src="https://github.com/user-attachments/assets/f1938c94-8284-4147-bdb7-23eb9acb4857" />
+
+
+
+
+
+
+
+
+
 
 #### その１： エンドポイントに付けるSecurity GroupをEgressで設定していた誤り
 
@@ -396,6 +393,28 @@ EndpointのプライベートIPへ解決される仕組みを理解した。
 
 当初はSecurity GroupやIAMロールの問題と考えていたため
 原因の切り分けに時間を要してしまった。
+
+
+
+#### その４：SSM接続に成功後した後にちょっとしたトラブルあり
+
+```text
+
+通信成立
+
+↓
+
+NAT Gateway削除
+
+↓
+
+想定外の挙動が発生
+
+↓
+
+Project03へ
+
+```
 
 
 <br><br><br>
