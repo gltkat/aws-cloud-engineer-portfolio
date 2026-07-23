@@ -202,10 +202,16 @@ Terraformでは通常、1つのresourceブロックが1つの管理対象とし�
 
 
 
+
+
+
+
+
+
 ---
 # Project 02
 
-## Systems Managerを用いてプライベートネットワーク上のEC2インスタンスへアクセスする
+## Systems Managerを追加してEC2インスタンスとの通信状況について確認する
 
 ## 詳細構成図
 
@@ -228,7 +234,9 @@ Private-C
 
 SSM Endpoint
 S3 Endpoint
+
 ```
+
 ## 検証目的
 
 Systems Managerを利用してEC2インスタンと交信し外部との通信状況を確認する
@@ -240,13 +248,9 @@ Systems Managerを利用してEC2インスタンと交信し外部との通信�
 ## 検証内容
 
 ```text
-① NAT Gateway削除
 
-Private Subnet
- ↓
-× Internet
 
-② SSM Endpoint追加
+① SSM Endpoint追加
 
 Private Subnet
  ↓
@@ -254,13 +258,19 @@ Private Subnet
  ↓
 Systems Manager
 
-③ Session Manager接続成功
+② Session Manager接続成功
 
 AWS Console
  ↓
 Systems Manager
  ↓
 EC2
+
+③ NAT Gateway削除
+
+Private Subnet
+ ↓
+× Internet
 
 ④ インターネット接続不可を確認
 
@@ -272,13 +282,13 @@ curl google.com
 
 ```
 
-① NAT Gatewayを削除し、
+① Systems Manager Interface Endpointを追加
+
+② Session Managerによる接続を確認
+
+③ NAT Gatewayを削除し、
    プライベートサブネットから
    インターネットへ接続できないことを確認
-
-② Systems Manager Interface Endpointを追加
-
-③ Session Managerによる接続を確認
 
 ④ NAT Gatewayが存在しなくても
    EC2へ管理アクセスできることを確認
@@ -307,14 +317,6 @@ Interface Endpoint・Security Group・Private DNSが連携して通信経路を�
 ### つまずきポイント
 
 <img width="833" height="947" alt="image" src="https://github.com/user-attachments/assets/f1938c94-8284-4147-bdb7-23eb9acb4857" />
-
-
-
-
-
-
-
-
 
 
 #### その１： エンドポイントに付けるSecurity GroupをEgressで設定していた誤り
@@ -346,29 +348,9 @@ EC2側からSystems Managerへ通信を開始する仕組みであることを�
 
 ---
 
-#### その2：必要となるインターフェイス型エンドポイントの作成数を間違っていたこと
 
-**【気付き】**
- SSM接続にはインターフェイス型エンドポイントが4つ必要
 
-<br>
-
-**【詳細】**
-
-<img width="681" height="323" alt="image" src="https://github.com/user-attachments/assets/8917c794-896d-46dd-93ed-3b4ca3b4a00c" />
-
-当初はssm接続には３つのエンドポイントが必要だと思い込んでいた。
-
-しかし実際にはそれだけでは接続を成功させることが出来なかった。
-
-管理用（ssmmaneaged）・ec2→ssm・ssm→ec2への用途ごとの専用エンドポイント以外に、
-暗号化通信（kms）を利用するためのエンドポイントが必要となることを理解した。
-
-<br>
-
----
-
-#### その3： AWS内部における名前解決の重要性を認識出来ていなかった点 
+#### その２： AWS内部における名前解決の重要性を認識出来ていなかった点 
 
 **【気付き】**
  Private DNS設定を有効化しておく必要がある
@@ -394,12 +376,36 @@ EndpointのプライベートIPへ解決される仕組みを理解した。
 当初はSecurity GroupやIAMロールの問題と考えていたため
 原因の切り分けに時間を要してしまった。
 
+<br>
+
+---
 
 
-#### その４：SSM接続に成功後した後にちょっとしたトラブルあり
+#### その３：必要となるインターフェイス型エンドポイントの作成数を間違っていたこと
+
+**【気付き】**
+ SSM接続にはインターフェイス型エンドポイントが4つ必要
+
+<br>
+
+**【詳細】**
+
+<img width="681" height="323" alt="image" src="https://github.com/user-attachments/assets/8917c794-896d-46dd-93ed-3b4ca3b4a00c" />
+
+当初はssm接続には３つのエンドポイントが必要だと思い込んでいた。
+
+しかし実際にはそれだけでは接続を成功させることが出来なかった。
+
+管理用（ssmmaneaged）・ec2→ssm・ssm→ec2への用途ごとの専用エンドポイント以外に、
+暗号化通信（kms）を利用するためのエンドポイントが必要となることを理解した。
+
+<br>
+
+---
+
+#### その4：通信成立後に想定外の挙動が発生
 
 ```text
-
 通信成立
 
 ↓
@@ -412,16 +418,38 @@ NAT Gateway削除
 
 ↓
 
-Project03へ
+Project03で総括
 
 ```
+
+通信経路の理解後も想定と異なる挙動が発生した。
+
+この内容については、再検証を含めProject03で総括している。
 
 
 <br><br><br>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
-# Project 03
+
+# Project 03 
 
 ## ALBヘルスチェック失敗時の原因調査と解決
 
@@ -436,6 +464,14 @@ EC2
 SSM Endpoint
 
 ```
+
+通信経路の理解後も想定と異なる挙動が発生した。
+
+この内容については、再検証を含めProject03で総括している。
+
+<br>
+
+---
 
 ## 検証目的
 
@@ -557,6 +593,21 @@ ALBヘルスチェック正常
 そして構成管理ツールのみで状態を管理することの重要性を学ぶことができた。
 
 <br><br><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
