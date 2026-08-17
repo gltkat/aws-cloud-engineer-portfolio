@@ -184,14 +184,23 @@ S3への通信が制御されることを改めて確認・理解できた。
 
 当初はfor_eachの構文を使う方がシンプルに感じていた。
 
+<img width="624" height="440" alt="image" src="https://github.com/user-attachments/assets/25632fe7-4802-4fbf-be77-7be1f162358d" />
+
+
 構成を整理する中で各Subnetを個別のresourceとして記述し直したことで、
 Terraformがリソース単位で状態を管理していることをより意識できるようになった。 
 
 Terraformでは通常、1つのresourceブロックが1つの管理対象としてTerraform Stateへ登録される。
 
-一方、for_eachを利用した場合は、
-1つのresourceブロックから複数の管理対象が生成され、それぞれがTerraform Stateへ独立したリソースとして登録される。
+<img width="489" height="286" alt="image" src="https://github.com/user-attachments/assets/e50861be-4d2b-4d11-ba6b-1598144a51e9" />
 
+
+
+for_eachを利用すると記述はシンプルになる。
+
+一方でTerraformが管理対象をどのように扱っているかを把握しづらくなる場合がある。
+
+可読性だけでなく管理のしやすさも考慮して選択する必要があると理解した。
 
 
 <br><br><br>
