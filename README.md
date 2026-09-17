@@ -43,7 +43,7 @@ NAT Gateway
 
 <br><br><br>
 # Project 01
-## TerraformによるAWS 2AZ高可用性環境構築
+## TerraformによるAWS上での 2az高可用性環境の構築
 
 ### 構築内容
 
