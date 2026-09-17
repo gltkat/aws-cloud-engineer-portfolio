@@ -258,6 +258,7 @@ Systems Managerを利用してEC2インスタンと交信し外部との通信�
 
 ## 検証内容
 
+<img width="1137" height="489" alt="proj2" src="https://github.com/user-attachments/assets/c05f4464-75ed-432f-9ecb-44de7c49fc73" />
 
 
 ① Systems Manager Interface Endpointを追加
