@@ -333,7 +333,7 @@ Interface Endpoint・Security Group・Private DNSが連携して通信経路を�
 #### その１： エンドポイントに付けるSecurity GroupをEgressで設定していた誤り
 
 **【気付き】**
- Iacにおいては理解していたつもりでも勘違いで真逆で設定してしまう危険がある
+ Iacを扱う際には必要な設定を真逆で設定してしまう罠がたくさんある
 
 <br>
 
