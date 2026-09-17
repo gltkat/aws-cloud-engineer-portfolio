@@ -258,40 +258,7 @@ Systems Managerを利用してEC2インスタンと交信し外部との通信�
 
 ## 検証内容
 
-```text
 
-
-① SSM Endpoint追加
-
-Private Subnet
- ↓
-○ SSM Endpoint
- ↓
-Systems Manager
-
-② Session Manager接続成功
-
-AWS Console
- ↓
-Systems Manager
- ↓
-EC2
-
-③ NAT Gateway削除
-
-Private Subnet
- ↓
-× Internet
-
-④ インターネット接続不可を確認
-
-EC2
- ↓
-curl google.com
- ↓
-× 接続不可
-
-```
 
 ① Systems Manager Interface Endpointを追加
 
