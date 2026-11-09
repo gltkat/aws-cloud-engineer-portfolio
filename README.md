@@ -55,10 +55,23 @@ NAT Gateway
 
 ###  詳細構成図
 
-<img width="683" height="540" alt="vpc1" src="https://github.com/user-attachments/assets/7a8e4b79-5166-4405-9a3c-0b07d5d3d816" />
+```text
+VPC 10.0.0.0/16
 
+Public-A
+  NAT
 
+Public-C
+  NAT
 
+Private-A
+  EC2
+
+Private-C
+  EC2
+
+S3 Endpoint
+```
 <img width="506" height="438" alt="image" src="https://github.com/user-attachments/assets/8052798a-6fe8-409a-98d0-3b3f310ce013" />
 
 <br>
@@ -215,7 +228,25 @@ for_eachを利用すると記述はシンプルになる。
 
 ### SSM Endpointを追加した構成
 
-<img width="679" height="588" alt="vpc2" src="https://github.com/user-attachments/assets/e9b0f3bc-9516-4f4c-9eae-8dc2ea4e107c" />
+```text
+VPC 10.0.0.0/16
+
+Public-A
+  NAT
+
+Public-C
+  NAT
+
+Private-A
+  EC2
+
+Private-C
+  EC2
+
+SSM Endpoint
+S3 Endpoint
+
+```
 
 ## 検証目的
 
@@ -282,20 +313,13 @@ Interface Endpoint・Security Group・Private DNSが連携して通信経路を�
 実装当初においてInterface Endpointに設定する
 Security GroupのルールをEgressで設定してしまっていた。
 
-**【通信の流れをしっかり把握してSecurity Groupの設定方向を決める必要がある】**
-
-<img width="1490" height="431" alt="plan3" src="https://github.com/user-attachments/assets/8a138400-d501-4932-a682-9e811e36ffed" />
-
-
 AWSの管理領域とEC2インスタンの中間にエンドポイントは位置している。
-
-
 
 そのためInterface Endpoint側では
 EC2からのHTTPS通信を受け付けるための
 Ingressルールが必要である。
 
-実装作業においてはコードを真逆で入力してしまう危険性を強く感じると共に
+実装作業において不意に勘違いしてコードを入力してしまう怖さを知ると共に
 SSM接続は管理端末からEC2へ接続するのではなく、
 EC2側からSystems Managerへ通信を開始する仕組みであることを確認できた。
 
@@ -473,7 +497,7 @@ NATが無くてダウンロード失敗
 ```
 ALBのヘルスチェックがアプリケーションレベルでのチェックであることへの意識が不具合に直面するまで曖昧だった。
 
-座学で学んだ知識のおさらいや試行錯誤を繰り返したためインスタンス上のWebサーバーが応答しない原因を特定するのに苦労した。
+Webサーバーが応答しない原因を特定するのに苦労した。
 
 調査の結果、NAT Gatewayが存在しなかったためUserDataによるWebサーバー導入処理が失敗していたことが判明した。
 
