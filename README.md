@@ -496,14 +496,11 @@ ALBヘルスチェックが異常となっていた原因を特定できた。
 
 #### 再検証が必要となったケース
 
-<img width="369" height="666" alt="再検証のフロー" src="https://github.com/user-attachments/assets/bf0c21d3-40ba-4809-a22e-4a5d6b8c93a7" />
-
 
 ```text
 
 ALBヘルスチェック正常化
-          ↓![Uploading project03_reverification_flow.svg…]()
-
+          ↓
     NAT Gateway削除
           ↓
    想定外の異常が再発
