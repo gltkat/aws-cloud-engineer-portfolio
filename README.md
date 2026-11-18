@@ -480,7 +480,8 @@ ALBヘルスチェック機能の確認
 ### つまずきポイント
 UI上でインスタンスは正常に動いているにもかかわらずヘルスチェックがすべて異常となっていた
 
-<img width="1243" height="1265" alt="ALBヘルスチェック異常の原因調査フロー" src="https://github.com/user-attachments/assets/965da5ef-2797-4a0f-8565-e9067f615f5e" />
+<img width="1312" height="1199" alt="ALB異常の原因調査フロー" src="https://github.com/user-attachments/assets/c0f5e051-febb-41ff-824c-45fd2dbc494d" />
+
 
 
 Webサーバーが応答しない原因を特定するのに苦労した。
@@ -498,25 +499,21 @@ ALBヘルスチェックが異常となっていた原因を特定できた。
 
 ```text
 
-① ALBヘルスチェックの正常化
-
-   ↓
-
-④ NAT削除
-
-⑤ なぜか再び異常化
-
-⑥ 理屈と合わない
-
-⑦ UI操作でEC2停止・削除・再作成などを繰り返す
-
-⑧ Terraform管理との整合性が怪しくなる
-
-⑨ 後日Terraformのみで再構築
-
-⑩ NAT削除後も正常
-
-⑪ 理論通りの結果を確認
+ALBヘルスチェック正常化
+          ↓
+    NAT Gateway削除
+          ↓
+   想定外の異常が再発
+          ↓
+  原因調査・UI操作を反復
+          ↓
+Terraform管理との整合性に懸念
+          ↓
+ Terraformのみで再構築
+          ↓
+ NAT削除後も正常を維持
+          ↓
+   理論どおりの結果を確認
 
 ```
 
