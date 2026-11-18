@@ -258,7 +258,8 @@ Systems Managerを利用してEC2インスタンと交信し外部との通信�
 
 ## 検証内容
 
-<img width="1137" height="489" alt="proj2" src="https://github.com/user-attachments/assets/c05f4464-75ed-432f-9ecb-44de7c49fc73" />
+<img width="800" alt="proj2" src="https://github.com/user-attachments/assets/c05f4464-75ed-432f-9ecb-44de7c49fc73" />
+
 
 
 ① Systems Manager Interface Endpointを追加
@@ -272,7 +273,7 @@ Systems Managerを利用してEC2インスタンと交信し外部との通信�
 ④ NAT Gatewayが存在しなくても
    EC2へ管理アクセスできることを確認
 
-<img width="1779" height="756" alt="image" src="https://github.com/user-attachments/assets/5cef0b7b-f7dd-4baa-91df-97e32f7e0192" />
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/5cef0b7b-f7dd-4baa-91df-97e32f7e0192" />
 
 
 
@@ -456,8 +457,7 @@ ALBヘルスチェック機能の確認
 - Terraformにて構築後、ALBへのブラウザによるアクセス画面の確認をする
 - AWSのUI操作によって片側インスタンスを停止しALBヘルスチェック内容を確認する
 
-<img width="1195" height="626" alt="image" src="https://github.com/user-attachments/assets/af41c145-1a34-4fc0-b8a3-654c0c3609a5" />
-
+<img width="750" alt="image" src="https://github.com/user-attachments/assets/af41c145-1a34-4fc0-b8a3-654c0c3609a5" />
 
 ### 学んだこと
 
@@ -483,7 +483,6 @@ UI上でインスタンスは正常に動いているにもかかわらずヘル
 <img width="1312" height="1199" alt="ALB異常の原因調査フロー" src="https://github.com/user-attachments/assets/c0f5e051-febb-41ff-824c-45fd2dbc494d" />
 
 
-
 Webサーバーが応答しない原因を特定するのに苦労した。
 
 ALBのヘルスチェックがアプリケーションレベルでのチェックであることへの意識が不具合に直面するまで曖昧だった。
@@ -493,14 +492,18 @@ ALBのヘルスチェックがアプリケーションレベルでのチェッ�
 EC2自体は起動していたものの、Webサーバーが動作しておらず
 ALBヘルスチェックが異常となっていた原因を特定できた。
 
-<img width="803" height="430" alt="image" src="https://github.com/user-attachments/assets/15d1fd60-a207-4a7c-8159-81a35f94c01e" />
+
 
 #### 再検証が必要となったケース
+
+<img width="369" height="666" alt="再検証のフロー" src="https://github.com/user-attachments/assets/bf0c21d3-40ba-4809-a22e-4a5d6b8c93a7" />
+
 
 ```text
 
 ALBヘルスチェック正常化
-          ↓
+          ↓![Uploading project03_reverification_flow.svg…]()
+
     NAT Gateway削除
           ↓
    想定外の異常が再発
