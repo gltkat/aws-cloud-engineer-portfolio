@@ -505,27 +505,7 @@ ALBヘルスチェックが異常となっていた原因を特定できた。
 <br>
 
 
-
-
-```text
-
-ALBヘルスチェック正常化
-          ↓
-    NAT Gateway削除
-          ↓
-   想定外の異常が再発
-          ↓
-  原因調査・UI操作を反復
-          ↓
-Terraform管理との整合性に懸念
-          ↓
- Terraformのみで再構築
-          ↓
- NAT削除後も正常を維持
-          ↓
-   理論どおりの結果を確認
-
-```
+<img src="./project03_reverification_flow_v2.svg" width="500">
 
 Webサーバー導入後にNAT Gatewayを削除した場合において、
 本来であればALBヘルスチェックは正常を維持するはずだった。
