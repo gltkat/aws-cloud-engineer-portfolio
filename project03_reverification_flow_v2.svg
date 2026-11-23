@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="760" viewBox="0 0 480 760" role="img" aria-labelledby="title desc">
+<title id="title">再検証が必要となったケース</title>
+<desc id="desc">ALBヘルスチェック正常化からNAT Gateway削除、想定外の異常再発、調査、Terraformのみでの再構築、正常維持確認までの流れ</desc>
+<rect width="480" height="760" fill="#ffffff"/>
+<style>
+text {font-family:'Noto Sans CJK JP','Noto Sans JP','Yu Gothic','Meiryo',sans-serif; fill:#20252b;}
+.main {font-size:19px;font-weight:650;text-anchor:middle;}
+.sub {font-size:15px;text-anchor:middle;fill:#555e68;}
+.arrow {stroke:#555e68;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#555e68" stroke-width="1.3"/></marker></defs>
+<text x="240" y="48" class="main">ALBヘルスチェック正常化</text>
+<path class="arrow" d="M240 66 V95" marker-end="url(#arrow)"/>
+<text x="240" y="131" class="main">NAT Gateway削除</text>
+<path class="arrow" d="M240 151 V178" marker-end="url(#arrow)"/>
+<rect x="46" y="195" width="388" height="94" rx="10" fill="#fffafa" stroke="#e9c9c9"/>
+<text x="240" y="233" class="main" style="fill:#c62828">想定外の異常が再発</text>
+<text x="240" y="260" class="sub">本来は正常を維持するはず</text>
+<path class="arrow" d="M240 302 V333" marker-end="url(#arrow)"/>
+<text x="240" y="369" class="main">原因調査が難航</text>
+<text x="240" y="396" class="sub">AWSコンソールでEC2の停止・削除・再作成</text>
+<text x="240" y="419" class="sub">などを繰り返す</text>
+<path class="arrow" d="M240 438 V468" marker-end="url(#arrow)"/>
+<text x="240" y="504" class="main">Terraformのみで再構築</text>
+<path class="arrow" d="M240 524 V554" marker-end="url(#arrow)"/>
+<rect x="46" y="571" width="388" height="100" rx="10" fill="#f8fcf9" stroke="#c9e2d0"/>
+<text x="240" y="612" class="main" style="fill:#17733b">NAT削除後も正常を維持</text>
+<text x="240" y="641" class="sub">理論どおりの結果を確認</text>
+<text x="240" y="722" class="sub" style="font-size:13px">※ 初回の異常について真因は特定できていない</text>
+</svg>
