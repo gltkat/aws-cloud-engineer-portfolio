@@ -486,10 +486,7 @@ UI上でインスタンスは正常に動いているにもかかわらずヘル
 
 <br>
 
-<img src="./ALBヘルスチェック異常の原因調査フロー" width="750">
-
-<img width="1312" height="1199" alt="ALB異常の原因調査フロー" src="https://github.com/user-attachments/assets/c0f5e051-febb-41ff-824c-45fd2dbc494d" />
-
+<img width="800" alt="ALBヘルスチェック異常の原因調査フロー" src="https://github.com/user-attachments/assets/29e0f87b-d9b1-4ad2-b3b2-5881d1ccb938" />
 
 Webサーバーが応答しない原因を特定するのに苦労した。
 
