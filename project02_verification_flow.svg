@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="355" viewBox="0 0 560 355" role="img" aria-labelledby="title desc">
+<title id="title">NAT Gateway削除前後の通信検証</title>
+<desc id="desc">NAT Gateway削除後もSSM接続は正常を維持し、Internet通信は失敗した。</desc>
+<rect width="560" height="355" rx="5" fill="#ffffff"/>
+<g font-family="'Noto Sans JP', 'Yu Gothic', Meiryo, sans-serif" text-anchor="middle">
+<text x="280" y="34" font-size="20" font-weight="bold" fill="#252b32">NAT Gatewayあり</text>
+<text x="280" y="62" font-size="15" fill="#59616b">SSM接続・Internet通信ともに成功</text>
+<path d="M280 77 V115 M273 105 L280 115 L287 105" fill="none" stroke="#59616b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="280" y="146" font-size="21" font-weight="bold" fill="#252b32">NAT Gateway削除</text>
+<path d="M280 162 V190 H144 V216 M137 206 L144 216 L151 206 M280 190 H416 V216 M409 206 L416 216 L423 206" stroke="#59616b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="24" y="228" width="240" height="94" rx="9" fill="#f4f9f5" stroke="#b8d9c2"/>
+<text x="144" y="259" font-size="17" fill="#252b32" font-weight="bold">SSM接続</text>
+<text x="144" y="292" font-size="21" fill="#18753b" font-weight="bold">正常を維持</text>
+<rect x="296" y="228" width="240" height="94" rx="9" fill="#fcf5f5" stroke="#e8bdbd"/>
+<text x="416" y="259" font-size="17" fill="#252b32" font-weight="bold">Internet通信</text>
+<text x="416" y="292" font-size="21" fill="#c62828" font-weight="bold">通信失敗</text>
+</g>
+</svg>
