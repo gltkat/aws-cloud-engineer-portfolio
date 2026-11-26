@@ -131,32 +131,13 @@ for_eachを利用した場合、1つのresourceブロックから複数の管理
 構成を整理する中で各Subnetを個別のresourceブロックとして記述し直したことで、
 Terraformがリソースインスタンス単位で状態を管理していることを意識するようになった。
 
+<img width="640" height="445" alt="project01_terraform_state_comparison" src="https://github.com/user-attachments/assets/a996ebf2-0df8-457f-9e41-0f689ab999f4" />
 
+for_eachを利用した場合も、生成された各リソースインスタンスはTerraform State上で個別に管理される。
 
-
-
-<img width="489" height="286" alt="image" src="https://github.com/user-attachments/assets/e50861be-4d2b-4d11-ba6b-1598144a51e9" />
-
-
-
-構成を整理する中で各Subnetを個別のresourceとして記述し直したことで、
-Terraformがリソース単位で状態を管理していることをより意識できるようになった。 
-
-Terraformでは通常、1つのresourceブロックが1つの管理対象としてTerraform Stateへ登録される。
-
-<img width="624" height="440" alt="image" src="https://github.com/user-attachments/assets/25632fe7-4802-4fbf-be77-7be1f162358d" />
-
-
-
-for_eachを利用すると記述はシンプルになる。
-
-一方でTerraformが管理対象をどのように扱っているかを把握しづらくなる場合がある。
-
-可読性だけでなく管理のしやすさも考慮して選択する必要があると理解した。
-
+コード上の記述だけでなく、Terraform State上でどのように管理されるかを理解した上で実装することの重要性を学んだ。
 
 <br><br><br>
-
 
 
 
