@@ -55,24 +55,7 @@ NAT Gateway
 
 ###  詳細構成図
 
-```text
-VPC 10.0.0.0/16
-
-Public-A
-  NAT
-
-Public-C
-  NAT
-
-Private-A
-  EC2
-
-Private-C
-  EC2
-
-S3 Endpoint
-```
-<img width="506" height="438" alt="image" src="https://github.com/user-attachments/assets/8052798a-6fe8-409a-98d0-3b3f310ce013" />
+<img width="600" height="405" alt="project01_architecture" src="https://github.com/user-attachments/assets/cdcec088-c1be-4b0d-b383-3edbb9f1e7c0" />
 
 <br>
 
@@ -91,98 +74,66 @@ S3へアクセス可能であることを確認する。
 
 プライベート上のEC2インスタンスからインターネットへの接続
 
+<img width="600" height="390" alt="project01_verification_flow" src="https://github.com/user-attachments/assets/316725bc-7354-4754-bb8b-a551a657c6dc" />
+
+#### Terraform上でPrivate SubnetのNAT Gateway向けデフォルトルートをコメントアウトし、通信経路の変化を検証した。
+
 ```text
-【NATあり】
 
-EC2
- ↓
-Internet
+# route {
+#   cidr_block     = "0.0.0.0/0"
+#   nat_gateway_id = aws_nat_gateway.main_a.id
+# }
 
-【NATなし】
-
-EC2
- ↓
-× Internet
-
-EC2
- ↓
-○ S3 Endpoint
 ```
-
-<img width="490" height="301" alt="image" src="https://github.com/user-attachments/assets/1f78d48c-5d9b-4e03-8996-db0d307be882" />
 
 ### 学んだこと
 
-・NAT Gatewayはプライベートサブネットからインターネットへのアウトバウンド通信を実現する
+・NAT GatewayはPrivate Subnet上のEC2からインターネットへのアウトバウンド通信を実現する。
 
-・S3 Gateway Endpointを利用すると、NAT Gatewayを経由せずにS3へアクセスできる
+・S3 Gateway Endpointを利用すると、NAT Gatewayを経由せずにS3へアクセスできる。
 
-・NAT GatewayとS3 Gateway Endpointの役割の違いを実機で検証できた
-
-・Terraformではresource単位で状態管理が行われることを理解できた
+・TerraformではRoute Tableの作成とSubnetへの明示的な関連付けを、それぞれ別のresourceブロックで定義する。
 
 <br><br><br>
 
 ### つまずきポイント
 
-#### その１：NAT GatewayにSecurity Groupを設定しようとした点
+#### その1：通信経路とアクセス制御の混同
 
 **【気付き】**
- NAT Gatewayは
-Route Tableで通信制御を行う
+
+NAT GatewayおよびS3 Gateway EndpointにはSecurity Groupを設定できない
 
 <br>
 
 **【詳細】**
 
-実装当初EC2と同様にSecurity Groupを設定しようとしてしまっていた（座学での知識が使えていなかった）。
+実装当初は、EC2と同様にNAT GatewayやS3 Gateway EndpointにもSecurity Groupを設定しようとしていた。
 
-しかしNAT GatewayはSecurity Groupを持たず、
-通信制御はルートテーブルによって行われることを確認した。
+しかし、これらのリソースを経由する通信経路はルートテーブルによって決定される。
 
-当初はNAT Gatewayの削除をブラウザ上のUIで気軽に行ってしまったりもしたが
-stateファイルとの差異が深刻な状況を招いてしまい躓く点になっていた。
-
-現在ではリソースそのものや該当箇所をコメントアウトするなどした後にTerraform上からapplyすることを心掛けるようになった。
-
-Terraform stateとの不整合が発生した場合は、
-stateの修正やimportなどによる復旧が必要になることを学んだ。
+実装を通じて、Route Tableによる通信経路の指定とSecurity Groupによるアクセス制御の役割の違いを改めて理解した。
 
 <br>
 
----
-
-#### その２：S3 Gateway Endpointの設定への誤解
+#### その2：for_eachによる複数リソース管理への理解不足
 
 **【気付き】**
- Gateway Endpointには
-Security Groupは設定できない
+for_eachを利用した場合、1つのresourceブロックから複数の管理対象が生成される。
 
 <br>
 
 **【詳細】**
 
-当初は座学で得た知識を活かせずにSecurity Groupによる制御を行おうとしていた。
+実装当初は、記述の簡潔さからfor_eachを利用していたが、Terraform State上での管理単位を十分に理解できていなかった。
 
-しかしGateway EndpointはSecurity Groupを持たず、
-ルートテーブルへ自動追加される経路によって
-S3への通信が制御されることを改めて確認・理解できた。
+構成を整理する中で各Subnetを個別のresourceブロックとして記述し直したことで、
+Terraformがリソースインスタンス単位で状態を管理していることを意識するようになった。
 
-<br>
 
----
 
-#### その3：for_eachによる複数リソース管理を正しく理解できていなかった
 
-**【気付き】**
-リソース中にfor_eachの構文を使うと
-複数リソースが生成される
-
-<br>
-
-**【詳細】**
-
-当初はfor_eachの構文を使う方がシンプルに感じていた。
 
 <img width="489" height="286" alt="image" src="https://github.com/user-attachments/assets/e50861be-4d2b-4d11-ba6b-1598144a51e9" />
 
@@ -228,25 +179,7 @@ for_eachを利用すると記述はシンプルになる。
 
 ### SSM Endpointを追加した構成
 
-```text
-VPC 10.0.0.0/16
-
-Public-A
-  NAT
-
-Public-C
-  NAT
-
-Private-A
-  EC2
-
-Private-C
-  EC2
-
-SSM Endpoint
-S3 Endpoint
-
-```
+<img width="600" height="465" alt="project02_architecture" src="https://github.com/user-attachments/assets/709a7844-97ac-4010-901c-50422aa7d39c" />
 
 ## 検証目的
 
@@ -258,9 +191,7 @@ Systems Managerを利用してEC2インスタンと交信し外部との通信�
 
 ## 検証内容
 
-<img width="800" alt="proj2" src="https://github.com/user-attachments/assets/c05f4464-75ed-432f-9ecb-44de7c49fc73" />
-
-
+<img width="560" height="355" alt="project02_verification_flow" src="https://github.com/user-attachments/assets/1ec55375-e36b-4384-b954-e577074383c1" />
 
 ① Systems Manager Interface Endpointを追加
 
