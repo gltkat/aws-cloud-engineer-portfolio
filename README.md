@@ -70,6 +70,8 @@ NAT Gatewayを利用した場合と
 インターネット接続なしで
 S3へアクセス可能であることを確認する。
 
+<br>
+
 ### 検証内容
 
 プライベート上のEC2インスタンスからインターネットへの接続
@@ -97,7 +99,11 @@ S3へアクセス可能であることを確認する。
 
 <br><br><br>
 
+---
+
 ### つまずきポイント
+
+---
 
 #### その1：通信経路とアクセス制御の混同
 
@@ -116,6 +122,8 @@ NAT GatewayおよびS3 Gateway EndpointにはSecurity Groupを設定できない
 実装を通じて、Route Tableによる通信経路の指定とSecurity Groupによるアクセス制御の役割の違いを改めて理解した。
 
 <br>
+
+---
 
 #### その2：for_eachによる複数リソース管理への理解不足
 
@@ -204,37 +212,34 @@ EC2がSystems Managerへ通信を開始する仕組みや、
 Interface Endpoint・Security Group・Private DNSが連携して通信経路を構成している点を深く確認・理解することができた。
 
 <br><br><br>
-  
+
+---
 
 ### つまずきポイント
 
-<img width="833" height="947" alt="image" src="https://github.com/user-attachments/assets/f1938c94-8284-4147-bdb7-23eb9acb4857" />
+---
 
-
-#### その１： エンドポイントに付けるSecurity GroupをEgressで設定していた誤り
+#### その1：Interface Endpointにおける通信方向の誤認
 
 **【気付き】**
- Iacを扱う際には必要な設定を真逆で設定してしまう罠がたくさんある
+
+SSM AgentはEC2側から通信を開始するため、Interface Endpoint側ではIngressルールによるHTTPS通信の許可が必要となる。
 
 <br>
 
 
 **【詳細】**
 
-<img width="600" height="240" alt="image" src="https://github.com/user-attachments/assets/652ca74e-8f35-41c3-9564-74172a6f4d17" />
+実装当初は、Interface Endpointに設定するSecurity GroupのルールをEgressで設定してしまっていた。
 
-実装当初においてInterface Endpointに設定する
-Security GroupのルールをEgressで設定してしまっていた。
+<img width="600" height="350" alt="project02_security_group_direction" src="https://github.com/user-attachments/assets/566305dc-cf53-4c62-adbb-d2d1c6b767a0" />
 
-AWSの管理領域とEC2インスタンの中間にエンドポイントは位置している。
 
-そのためInterface Endpoint側では
-EC2からのHTTPS通信を受け付けるための
-Ingressルールが必要である。
+SSM接続ではSystems ManagerからEC2へ直接接続するのではなく、EC2上のSSM AgentがSystems Managerへの通信を開始する仕組みであることを理解した。
 
-実装作業において不意に勘違いしてコードを入力してしまう怖さを知ると共に
-SSM接続は管理端末からEC2へ接続するのではなく、
-EC2側からSystems Managerへ通信を開始する仕組みであることを確認できた。
+
+
+
 
 <br>
 
